@@ -1,7 +1,5 @@
-package main
+package demo
 
-import "fmt"
-
-func main() {
-	fmt.Println("Hello World")
+func Plus(x, y int) int {
+	return x + y
 }
