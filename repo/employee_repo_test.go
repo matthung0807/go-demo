@@ -1,0 +1,26 @@
+package repo
+
+import (
+	"testing"
+
+	"abc.com/demo/model"
+	"github.com/stretchr/testify/assert"
+)
+
+func TestFindEmployeesAgeGreaterThan30(t *testing.T) {
+	testCase := struct {
+		age      int
+		expected []model.Employee
+	}{
+		30,
+		[]model.Employee{
+			{Id: 1, Name: "John", Age: 33},
+			{Id: 3, Name: "Mike", Age: 45},
+		},
+	}
+
+	empRepo := EmployeeRepoImpl{}
+	actial := empRepo.FindEmployeesAgeGreaterThan(30)
+
+	assert.Equal(t, testCase.expected, actial)
+}
