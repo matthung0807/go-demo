@@ -1,0 +1,22 @@
+host: localhost:8080
+info:
+  contact: {}
+  description: Swagger API.
+  title: Gin Swagger Demo
+  version: "1.0"
+paths:
+  /demo/v1/hello:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+  /demo/v1/hi:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+swagger: "2.0"
