@@ -7,7 +7,7 @@ import (
 
 type DemoRoute struct {
 	*gin.RouterGroup
-	employeeHandler handler.EmployeeHanddlerInterface
+	employeeHandler *handler.EmployeeHandler
 }
 
 func NewDemoRoute(group *gin.RouterGroup) *DemoRoute {

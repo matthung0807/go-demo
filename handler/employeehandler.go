@@ -8,10 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type EmployeeHanddlerInterface interface {
-	GetEmployeeById() gin.HandlerFunc
-}
-
 type EmployeeHandler struct {
 }
 
