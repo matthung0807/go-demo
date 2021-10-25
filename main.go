@@ -3,7 +3,8 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	// _ "github.com/go-sql-driver/mysql"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -20,7 +21,7 @@ func main() {
 		var name string
 		var age int
 		err = rows.Scan(&id, &name, &age)
-		fmt.Printf("id=%d, name=%s, age=%d\n", id, name, age) // id=1, name=john, age=33
+		fmt.Printf("id=%d, name=%s, age=%d\n", id, name, age)
 	}
 }
 
