@@ -8,7 +8,7 @@ import (
 
 func TestHello(t *testing.T) {
 
-	srv := NewServer()                                    // start chi router
+	srv := NewRouter()                                    // create chi router
 	r := httptest.NewRequest("GET", "/employee/123", nil) // 建立一個http.Request請求
 	w := httptest.NewRecorder()                           // 建立一個ResponseRecorder其實作http.ResponseWriter，用來記錄response狀態
 

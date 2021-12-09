@@ -8,15 +8,12 @@ import (
 )
 
 func main() {
-	NewServer()
+	http.ListenAndServe(":8080", NewRouter()) // start serve
 }
 
-func NewServer() http.Handler {
+func NewRouter() http.Handler {
 	router := chi.NewRouter() // create chi router
-
 	router.Get("/employee/{id}", HandHello())
-
-	http.ListenAndServe(":8080", router) // set chi router
 	return router
 }
 
