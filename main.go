@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	accessKeyID = "AKIAIOSFODNN7EXAMPLE"
-	secretKey   = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+	accessKeyID = "AKIAIOSFODNN7EXAMPLE"                     // example
+	secretKey   = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" // example
 )
 
 func main() {
