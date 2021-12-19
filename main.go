@@ -18,7 +18,7 @@ const (
 func main() {
 	ctx := context.TODO()
 
-	client := NewS3Client(ctx) // Create an Amazon S3 service client
+	client := NewS3Client(ctx)
 
 	bucketName := "s3-demo-bucket-202112151320"
 	output := GetBucketObjectOutput(ctx, client, bucketName)
