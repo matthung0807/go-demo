@@ -6,13 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-)
-
-const (
-	accessKeyID = "AKIAIOSFODNN7EXAMPLE"                     // example
-	secretKey   = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" // example
 )
 
 func main() {
@@ -29,18 +23,13 @@ func main() {
 }
 
 func NewS3Client(ctx context.Context) *s3.Client {
-	creds := aws.NewCredentialsCache(
-		credentials.NewStaticCredentialsProvider(accessKeyID, secretKey, ""))
-
 	cfg, err := config.LoadDefaultConfig(
 		ctx,
 		config.WithRegion("ap-northeast-1"),
-		config.WithCredentialsProvider(creds),
 	)
 	if err != nil {
 		panic(err)
 	}
-
 	return s3.NewFromConfig(cfg) // Create an Amazon S3 service client
 }
 
