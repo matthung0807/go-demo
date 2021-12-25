@@ -4,56 +4,53 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/kinesis"
 )
 
-const (
-	accessKeyID = "AKIAIOSFODNN7EXAMPLE"                     // example
-	secretKey   = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" // example
-)
+type KinesisPutRecordAPI interface {
+	PutRecord(ctx context.Context,
+		params *kinesis.PutRecordInput,
+		optFns ...func(*kinesis.Options)) (*kinesis.PutRecordOutput, error)
+}
 
-func main() {
-	ctx := context.TODO()
+func MakePutRecord(
+	ctx context.Context,
+	api KinesisPutRecordAPI,
+	input *kinesis.PutRecordInput) (*kinesis.PutRecordOutput, error) {
 
-	client := NewS3Client(ctx)
+	return api.PutRecord(ctx, input)
+}
 
-	bucketName := "s3-demo-bucket-202112151320"
-	output := GetBucketObjectOutput(ctx, client, bucketName)
+func CreateInput(payload string) *kinesis.PutRecordInput {
+	stream := "KinesisDataStreamDemo" // stream name
+	partition := "demo-001"
 
-	for _, object := range output.Contents {
-		fmt.Printf("key=%s\n", aws.ToString(object.Key))
+	return &kinesis.PutRecordInput{
+		Data:         []byte(payload),
+		PartitionKey: &partition,
+		StreamName:   &stream,
 	}
 }
 
-func NewS3Client(ctx context.Context) *s3.Client {
-	creds := aws.NewCredentialsCache(
-		credentials.NewStaticCredentialsProvider(accessKeyID, secretKey, ""))
-
+func main() {
+	ctx := context.TODO()
 	cfg, err := config.LoadDefaultConfig(
 		ctx,
 		config.WithRegion("ap-northeast-1"),
-		config.WithCredentialsProvider(creds),
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	return s3.NewFromConfig(cfg) // Create an Amazon S3 service client
-}
+	client := kinesis.NewFromConfig(cfg)
 
-func GetBucketObjectOutput(
-	ctx context.Context,
-	client *s3.Client,
-	bucketName string) *s3.ListObjectsV2Output {
+	payload := "Hello world"
+	input := CreateInput(payload)
 
-	output, err := client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
-		Bucket: aws.String(bucketName),
-	})
+	results, err := MakePutRecord(ctx, client, input)
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
 	}
-	return output
+	fmt.Println(results.SequenceNumber)
 }
