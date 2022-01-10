@@ -7,15 +7,15 @@ import (
 
 //go:embed hello.txt
 //go:embed tmp/*
-var tmp embed.FS
+var f embed.FS
 
 func main() {
-	data, _ := tmp.ReadFile("hello.txt")
+	data, _ := f.ReadFile("hello.txt")
 	fmt.Println(string(data)) // Hello world
 
-	data, _ = tmp.ReadFile("tmp/a.txt")
+	data, _ = f.ReadFile("tmp/a.txt")
 	fmt.Println(string(data)) // Apple
 
-	data, _ = tmp.ReadFile("tmp/b.txt")
+	data, _ = f.ReadFile("tmp/b.txt")
 	fmt.Println(string(data)) // Banana
 }
