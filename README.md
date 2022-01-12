@@ -1,2 +1,2 @@
 # go-demo
-[Golang 查詢PostgreSQL uuid型態欄位](https://matthung0807.blogspot.com/2021/12/query-postgresql-uuid-type-column.html)
+[Golang sql PostgreSQL查詢範例](https://matthung0807.blogspot.com/2022/01/go-sql-postgresql-query-example.html)
