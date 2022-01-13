@@ -12,7 +12,7 @@ func main() {
 
 	id := 1
 	rows, err := db.Query("SELECT * FROM employee where id=?", id)
-	rows.Close()
+	defer rows.Close()
 	if err != nil {
 		panic(err)
 	}
