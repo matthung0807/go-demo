@@ -42,10 +42,10 @@ func main() {
 	db := connect()
 
 	rows, err := db.Query("SELECT id, name, age, created_on FROM employee")
-	defer rows.Close()
 	if err != nil {
 		panic(err)
 	}
+	defer rows.Close()
 
 	employees := []Employee{}
 	for rows.Next() {
