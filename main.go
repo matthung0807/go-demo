@@ -20,7 +20,7 @@ const (
 	HOST     = "localhost"
 	PORT     = "5432"
 	DATABASE = "postgres"
-	USER     = "admin" // 使用者名稱
+	USER     = "admin"
 	PASSWORD = "12345"
 	SSL      = "disable"
 )
@@ -40,22 +40,49 @@ func connect() *sql.DB {
 
 func main() {
 	db := connect()
-
-	rows, err := db.Query("SELECT id, name, age, created_on FROM employee")
+	emps, err := GetAllEmployees(db)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(emps)
+
+	emp, err := GetEmployeeByID(db, 1)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(*emp)
+}
+
+func GetAllEmployees(db *sql.DB) ([]Employee, error) {
+	rows, err := db.Query("SELECT id, name, age, created_on FROM employee")
+	if err != nil {
+		return nil, err
+	}
 	defer rows.Close()
 
-	employees := []Employee{}
+	var emps []Employee
 	for rows.Next() {
 		var e Employee
 		err = rows.Scan(&e.ID, &e.Name, &e.Age, &e.CreatedOn)
 		if err != nil {
-			panic("scan error")
+			return nil, err
 		}
-		employees = append(employees, e)
+		emps = append(emps, e)
 	}
+	return emps, nil
+}
 
-	fmt.Println(employees)
+func GetEmployeeByID(db *sql.DB, id int64) (*Employee, error) {
+	row := db.QueryRow("SELECT * FROM employee WHERE id = $1 LIMIT 1", id)
+	var emp Employee
+	err := row.Scan(
+		&emp.ID,
+		&emp.Name,
+		&emp.Age,
+		&emp.CreatedOn,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &emp, nil
 }
