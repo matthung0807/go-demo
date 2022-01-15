@@ -44,13 +44,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(emps)
+	fmt.Println(emps) // [{1 john 33 2022-01-06 10:28:51.979435 +0000 +0000}]
 
 	emp, err := GetEmployeeByID(db, 1)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(*emp)
+	fmt.Println(*emp) // {1 john 33 2022-01-06 10:28:51.979435 +0000 +0000}
 }
 
 func GetAllEmployees(db *sql.DB) ([]Employee, error) {
