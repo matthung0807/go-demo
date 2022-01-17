@@ -1,9 +1,9 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -33,29 +33,28 @@ func connect() *sql.DB {
 
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
-		log.Panic("open database error")
+		panic("open database error")
 	}
 	return db
 }
 
 func main() {
+	ctx := context.Background()
 	db := connect()
-	emps, err := GetAllEmployees(db)
+	emps, err := GetAllEmployees(ctx, db)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(emps) // [{1 john 33 2022-01-06 10:28:51.979435 +0000 +0000}]
-
-	emp, err := GetEmployeeByID(db, 1)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(*emp) // {1 john 33 2022-01-06 10:28:51.979435 +0000 +0000}
+	fmt.Println(emps)
 }
 
-func GetAllEmployees(db *sql.DB) ([]Employee, error) {
-	rows, err := db.Query("SELECT id, name, age, created_on FROM employee")
+func GetAllEmployees(ctx context.Context, db *sql.DB) ([]Employee, error) {
+	queryCtx, cancel := context.WithTimeout(ctx, 3*time.Second) // create timeout Context
+	defer cancel()                                              // make sure release resources held by Context when exiting function
+
+	rows, err := db.QueryContext(queryCtx, "SELECT *, pg_sleep(5) FROM employee")
 	if err != nil {
+		fmt.Println("query timeout")
 		return nil, err
 	}
 	defer rows.Close()
@@ -70,19 +69,4 @@ func GetAllEmployees(db *sql.DB) ([]Employee, error) {
 		emps = append(emps, e)
 	}
 	return emps, nil
-}
-
-func GetEmployeeByID(db *sql.DB, id int64) (*Employee, error) {
-	row := db.QueryRow("SELECT * FROM employee WHERE id = $1 LIMIT 1", id)
-	var emp Employee
-	err := row.Scan(
-		&emp.ID,
-		&emp.Name,
-		&emp.Age,
-		&emp.CreatedOn,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &emp, nil
 }
