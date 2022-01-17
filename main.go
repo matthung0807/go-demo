@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -33,7 +32,7 @@ func connect() *sql.DB {
 
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
-		log.Panic("open database error")
+		panic("open database error")
 	}
 	return db
 }
