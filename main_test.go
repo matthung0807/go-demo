@@ -36,9 +36,9 @@ func TestGetEmployeeByID(t *testing.T) {
 	}
 	defer db.Close()
 
-	createdOn, _ := time.Parse("2006-01-02", "2021-01-14")
+	createdAt, _ := time.Parse("2006-01-02", "2021-01-14")
 	rows := sqlmock.NewRows([]string{"id", "name", "age", "created_on"}).
-		AddRow(1, "john", 33, createdOn)
+		AddRow(1, "john", 33, createdAt)
 
 	// mock return rows
 	mock.ExpectQuery("^SELECT (.+) FROM employee WHERE id = \\$1 LIMIT 1$").
@@ -50,7 +50,7 @@ func TestGetEmployeeByID(t *testing.T) {
 		ID:        1,
 		Name:      "john",
 		Age:       33,
-		CreatedOn: createdOn,
+		CreatedAt: createdAt,
 	}
 	if *emp != expected {
 		t.Errorf("Expected %v, but %v", expected, emp)
