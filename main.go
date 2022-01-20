@@ -14,7 +14,7 @@ type Employee struct {
 	ID        uuid.UUID
 	Name      string
 	Age       int
-	CreatedOn time.Time
+	CreatedAt time.Time
 }
 
 const (
@@ -42,7 +42,7 @@ func connect() *sql.DB {
 func main() {
 	db := connect()
 
-	rows, err := db.Query("SELECT id, name, age, created_on FROM employee")
+	rows, err := db.Query("SELECT id, name, age, created_at FROM employee")
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +51,7 @@ func main() {
 	employees := []Employee{}
 	for rows.Next() {
 		var e Employee
-		err = rows.Scan(&e.ID, &e.Name, &e.Age, &e.CreatedOn)
+		err = rows.Scan(&e.ID, &e.Name, &e.Age, &e.CreatedAt)
 		if err != nil {
 			panic("scan error")
 		}
