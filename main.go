@@ -10,10 +10,9 @@ import (
 )
 
 type Employee struct {
-	ID        int64
-	Name      string
-	Age       int
-	CreatedOn time.Time
+	ID   int64
+	Name string
+	Age  int
 }
 
 const (
@@ -62,7 +61,7 @@ func GetAllEmployees(ctx context.Context, db *sql.DB) ([]Employee, error) {
 	var emps []Employee
 	for rows.Next() {
 		var e Employee
-		err = rows.Scan(&e.ID, &e.Name, &e.Age, &e.CreatedOn)
+		err = rows.Scan(&e.ID, &e.Name, &e.Age)
 		if err != nil {
 			return nil, err
 		}
