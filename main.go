@@ -12,7 +12,7 @@ type Employee struct {
 	ID        int64
 	Name      string
 	Age       int
-	CreatedOn time.Time
+	CreatedAt time.Time
 }
 
 const (
@@ -53,7 +53,7 @@ func main() {
 }
 
 func GetAllEmployees(db *sql.DB) ([]Employee, error) {
-	rows, err := db.Query("SELECT id, name, age, created_on FROM employee")
+	rows, err := db.Query("SELECT id, name, age, created_at FROM employee")
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func GetAllEmployees(db *sql.DB) ([]Employee, error) {
 	var emps []Employee
 	for rows.Next() {
 		var e Employee
-		err = rows.Scan(&e.ID, &e.Name, &e.Age, &e.CreatedOn)
+		err = rows.Scan(&e.ID, &e.Name, &e.Age, &e.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -78,7 +78,7 @@ func GetEmployeeByID(db *sql.DB, id int64) (*Employee, error) {
 		&emp.ID,
 		&emp.Name,
 		&emp.Age,
-		&emp.CreatedOn,
+		&emp.CreatedAt,
 	)
 	if err != nil {
 		return nil, err
