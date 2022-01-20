@@ -46,7 +46,7 @@ func createEmployee(db *sql.DB, name string, age int) error {
 	}
 	defer tx.Rollback() // 確保錯誤發生時rollback.
 
-	sql := "INSERT INTO employee (name, age, created_on) VALUES ($1, $2, $3)"
+	sql := "INSERT INTO employee (name, age, created_at) VALUES ($1, $2, $3)"
 
 	_, err = tx.Exec(sql, "john", 33, time.Now()) // 執行DML sql並帶入參數
 	if err != nil {
