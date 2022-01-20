@@ -15,7 +15,8 @@ const (
 	HOST     = "localhost"
 	PORT     = "5432"
 	DATABASE = "postgres"
-	USER     = "matt"
+	USER     = "admin"
+	PASSWORD = "12345"
 	SSL      = "disable"
 )
 
@@ -23,8 +24,8 @@ func main() {
 	ctx := context.Background()
 	driver := "postgres"
 	dsn := fmt.Sprintf(
-		"host=%s port=%s user=%s dbname=%s sslmode=%s",
-		HOST, PORT, USER, DATABASE, SSL)
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		HOST, PORT, USER, PASSWORD, DATABASE, SSL)
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
 		log.Panic("open database error")
