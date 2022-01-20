@@ -10,7 +10,7 @@ import (
 )
 
 const getAll = `-- name: GetAll :many
-SELECT id, name, age, created_on FROM employee
+SELECT id, name, age, created_at FROM employee
 `
 
 func (q *Queries) GetAll(ctx context.Context) ([]Employee, error) {
@@ -26,7 +26,7 @@ func (q *Queries) GetAll(ctx context.Context) ([]Employee, error) {
 			&i.ID,
 			&i.Name,
 			&i.Age,
-			&i.CreatedOn,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -42,7 +42,7 @@ func (q *Queries) GetAll(ctx context.Context) ([]Employee, error) {
 }
 
 const getById = `-- name: GetById :one
-SELECT id, name, age, created_on FROM employee
+SELECT id, name, age, created_at FROM employee
 WHERE id = $1 LIMIT 1
 `
 
@@ -53,24 +53,24 @@ func (q *Queries) GetById(ctx context.Context, id int64) (Employee, error) {
 		&i.ID,
 		&i.Name,
 		&i.Age,
-		&i.CreatedOn,
+		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const insert = `-- name: Insert :exec
-INSERT INTO employee (name, age, created_on) 
+INSERT INTO employee (name, age, created_at) 
 VALUES ($1, $2, $3)
 `
 
 type InsertParams struct {
 	Name      string
 	Age       sql.NullInt32
-	CreatedOn time.Time
+	CreatedAt time.Time
 }
 
 func (q *Queries) Insert(ctx context.Context, arg InsertParams) error {
-	_, err := q.db.ExecContext(ctx, insert, arg.Name, arg.Age, arg.CreatedOn)
+	_, err := q.db.ExecContext(ctx, insert, arg.Name, arg.Age, arg.CreatedAt)
 	return err
 }
 

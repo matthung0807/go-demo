@@ -6,7 +6,7 @@ WHERE id = $1 LIMIT 1;
 SELECT * FROM employee;
 
 -- name: Insert :exec
-INSERT INTO employee (name, age, created_on) 
+INSERT INTO employee (name, age, created_at)
 VALUES ($1, $2, $3);
 
 -- name: Update :execrows

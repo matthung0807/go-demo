@@ -11,5 +11,5 @@ type Employee struct {
 	ID        int64
 	Name      string
 	Age       sql.NullInt32
-	CreatedOn time.Time
+	CreatedAt time.Time
 }
