@@ -5,3 +5,12 @@ repos:
     -   id: check-yaml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
+-   repo: local # local hooks
+    hooks:
+    -   id: swag
+        name: swag
+        entry: swag init # system command
+        language: system # use system command 
+        pass_filenames: false # no filenames will be passed to swag hook
+        files: \.go$ # run only on go files
+        description: Generate Swagger REST API documents
