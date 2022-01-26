@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Swagger API.",
+        "description": "Swagger REST API.",
         "title": "Swagger Demo",
         "contact": {},
         "version": "1.0"

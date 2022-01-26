@@ -1,7 +1,7 @@
 host: localhost:8080
 info:
   contact: {}
-  description: Swagger API.
+  description: Swagger REST API.
   title: Swagger Demo
   version: "1.0"
 paths:

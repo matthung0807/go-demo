@@ -10,7 +10,7 @@ import (
 
 // @title Swagger Demo
 // @version 1.0
-// @description Swagger API.
+// @description Swagger REST API.
 // @host localhost:8080
 func main() {
 	http.HandleFunc("/hello", HelloHandler)
