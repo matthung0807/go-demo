@@ -1,2 +1,2 @@
 # go-demo
-[Golang 使用swaggo產生REST API文件](https://matthung0807.blogspot.com/2022/01/go-swaggo-generate-rest-api-docs.html)
+[Golang 使用pre-commit搭配swaggo產生Swagger REST API文件](https://matthung0807.blogspot.com/2022/01/go-pre-commit-swaggo-generate-swagger-rest-api-docs.html)
