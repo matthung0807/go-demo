@@ -39,48 +39,37 @@ func connect() *sql.DB {
 
 func main() {
 	db := connect()
-	emps, err := GetAllEmployees(db)
+	emp := Employee{
+		Name: "tony",
+		Age:  23,
+	}
+	id, err := CreateEmployee(db, &emp)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(emps)
-	emp, err := GetEmployeeByID(db, 1)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(*emp)
+	fmt.Println(id)
 }
 
-func GetAllEmployees(db *sql.DB) ([]Employee, error) {
-	rows, err := db.Query("SELECT id, name, age, created_at FROM employee")
+func CreateEmployee(db *sql.DB, emp *Employee) (int64, error) {
+	tx, err := db.Begin()
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	defer rows.Close()
+	defer tx.Rollback()
 
-	var emps []Employee
-	for rows.Next() {
-		var e Employee
-		err = rows.Scan(&e.ID, &e.Name, &e.Age, &e.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
-		emps = append(emps, e)
-	}
-	return emps, nil
-}
+	id := int64(0)
+	sql := `INSERT INTO employee (name, age, created_at) 
+			VALUES ($1, $2, $3) 
+			RETURNING id`
 
-func GetEmployeeByID(db *sql.DB, id int64) (*Employee, error) {
-	row := db.QueryRow("SELECT * FROM employee WHERE id = $1 LIMIT 1", id)
-	var emp Employee
-	err := row.Scan(
-		&emp.ID,
-		&emp.Name,
-		&emp.Age,
-		&emp.CreatedAt,
-	)
+	err = tx.QueryRow(sql, &emp.Name, &emp.Age, time.Now()).Scan(&id)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	return &emp, nil
+
+	if err = tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
