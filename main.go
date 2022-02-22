@@ -39,30 +39,67 @@ func connect() *sql.DB {
 
 func main() {
 	db := connect()
+
 	emp := Employee{
-		Name: "tony",
-		Age:  23,
+		ID:   1,
+		Name: "john",
+		Age:  28,
 	}
-	id, err := CreateEmployee(db, &emp)
+
+	err := UpdateEmployee(db, &emp)
+	if err != nil {
+		panic(err)
+	}
+
+	emp.Age = 33
+	id, err := UpdateEmployeeReturnID(db, &emp)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(id)
 }
 
-func CreateEmployee(db *sql.DB, emp *Employee) (int64, error) {
+func UpdateEmployee(db *sql.DB, emp *Employee) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	sql := `UPDATE employee
+			SET 
+				name = $1, 
+                age = $2
+			WHERE id = $3`
+
+	_, err = tx.Exec(sql, &emp.Name, &emp.Age, &emp.ID)
+	if err != nil {
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateEmployeeReturnID(db *sql.DB, emp *Employee) (int64, error) {
 	tx, err := db.Begin()
 	if err != nil {
 		return 0, err
 	}
 	defer tx.Rollback()
 
-	id := int64(0)
-	sql := `INSERT INTO employee (name, age, created_at) 
-			VALUES ($1, $2, $3) 
+	sql := `UPDATE employee
+			SET 
+				name = $1, 
+                age = $2
+			WHERE id = $3
 			RETURNING id`
 
-	err = tx.QueryRow(sql, &emp.Name, &emp.Age, time.Now()).Scan(&id)
+	id := int64(0)
+	err = tx.QueryRow(sql, &emp.Name, &emp.Age, &emp.ID).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
