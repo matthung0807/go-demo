@@ -66,13 +66,13 @@ func UpdateEmployee(db *sql.DB, emp *Employee) error {
 	}
 	defer tx.Rollback()
 
-	sql := `UPDATE employee
+	query := `UPDATE employee
 			SET 
 				name = $1, 
                 age = $2
 			WHERE id = $3`
 
-	_, err = tx.Exec(sql, &emp.Name, &emp.Age, &emp.ID)
+	_, err = tx.Exec(query, &emp.Name, &emp.Age, &emp.ID)
 	if err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ func UpdateEmployeeReturnID(db *sql.DB, emp *Employee) (int64, error) {
 	}
 	defer tx.Rollback()
 
-	sql := `UPDATE employee
+	query := `UPDATE employee
 			SET 
 				name = $1, 
                 age = $2
@@ -99,7 +99,7 @@ func UpdateEmployeeReturnID(db *sql.DB, emp *Employee) (int64, error) {
 			RETURNING id`
 
 	id := int64(0)
-	err = tx.QueryRow(sql, &emp.Name, &emp.Age, &emp.ID).Scan(&id)
+	err = tx.QueryRow(query, &emp.Name, &emp.Age, &emp.ID).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
