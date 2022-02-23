@@ -58,11 +58,11 @@ func CreateEmployee(db *sql.DB, emp *Employee) (int64, error) {
 	defer tx.Rollback()
 
 	id := int64(0)
-	sql := `INSERT INTO employee (name, age, created_at) 
+	query := `INSERT INTO employee (name, age, created_at) 
 			VALUES ($1, $2, $3) 
 			RETURNING id`
 
-	err = tx.QueryRow(sql, &emp.Name, &emp.Age, time.Now()).Scan(&id)
+	err = tx.QueryRow(query, &emp.Name, &emp.Age, time.Now()).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
