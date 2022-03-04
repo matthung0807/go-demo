@@ -4,35 +4,36 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 )
 
-type CreatedTime time.Time
-
 var df = "2006-01-02"
 
-func (c *CreatedTime) UnmarshalJSON(b []byte) error {
-	s := strings.Trim(string(b), "\"")
-	t, err := time.Parse(df, s)
+type CreatedDate time.Time
+
+func (c *CreatedDate) UnmarshalText(text []byte) error {
+	t, err := time.Parse(df, string(text))
 	if err != nil {
 		return err
 	}
-	*c = CreatedTime(t)
+	*c = CreatedDate(t)
 	return nil
 }
 
-func (c CreatedTime) MarshalJSON() ([]byte, error) {
-	t := time.Time(c)
-	s := t.Format(df)
-	return json.Marshal(s)
+func (c CreatedDate) MarshalText() (text []byte, err error) {
+	s := time.Time(c).Format(df)
+	return []byte(s), nil
+}
+
+func (c CreatedDate) String() string {
+	return time.Time(c).Format(df)
 }
 
 type Employee struct {
-	Id        int
-	Name      string
-	Age       int
-	CreatedAt CreatedTime
+	Id   int
+	Name string
+	Age  int
+	CreatedDate
 }
 
 func main() {
@@ -43,7 +44,7 @@ func main() {
 			if err := json.NewDecoder(r.Body).Decode(&emp); err != nil {
 				panic(err)
 			}
-			fmt.Println(time.Time(emp.CreatedAt))
+			fmt.Println(emp.CreatedDate) // 2021-01-19
 			json.NewEncoder(rw).Encode(emp)
 		default:
 			http.Error(rw, "Method not allowed", http.StatusMethodNotAllowed)
