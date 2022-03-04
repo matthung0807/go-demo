@@ -14,9 +14,11 @@ paths:
         in: query
         name: name
         type: string
+      produces:
+      - text/plain
       responses:
         "200":
-          description: OK
+          description: ok
           schema:
             type: string
       tags:

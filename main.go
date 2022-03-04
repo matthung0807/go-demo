@@ -22,8 +22,9 @@ func main() {
 }
 
 // @Tags Hello
+// @Produce plain
 // @Param name query string false "user name"
-// @Success 200 {string} string
+// @Success 200 {string} string "ok"
 // @Router /hello [get]
 func HelloHandler(rw http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")

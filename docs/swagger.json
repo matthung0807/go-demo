@@ -13,6 +13,9 @@
     "paths": {
         "/hello": {
             "get": {
+                "produces": [
+                    "text/plain"
+                ],
                 "tags": [
                     "Hello"
                 ],
@@ -26,7 +29,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "ok",
                         "schema": {
                             "type": "string"
                         }
