@@ -10,9 +10,11 @@ import (
 
 type CreatedTime time.Time
 
+var df = "2006-01-02"
+
 func (c *CreatedTime) UnmarshalJSON(b []byte) error {
 	s := strings.Trim(string(b), "\"")
-	t, err := time.Parse("2006-01-02", s)
+	t, err := time.Parse(df, s)
 	if err != nil {
 		return err
 	}
@@ -22,7 +24,7 @@ func (c *CreatedTime) UnmarshalJSON(b []byte) error {
 
 func (c CreatedTime) MarshalJSON() ([]byte, error) {
 	t := time.Time(c)
-	s := t.Format("2006-01-02")
+	s := t.Format(df)
 	return json.Marshal(s)
 }
 
