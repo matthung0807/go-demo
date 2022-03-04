@@ -21,7 +21,9 @@ func (c *CreatedTime) UnmarshalJSON(b []byte) error {
 }
 
 func (c CreatedTime) MarshalJSON() ([]byte, error) {
-	return json.Marshal(time.Time(c))
+	t := time.Time(c)
+	s := t.Format("2006-01-02")
+	return json.Marshal(s)
 }
 
 type Employee struct {
