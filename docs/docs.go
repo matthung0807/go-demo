@@ -18,14 +18,28 @@ var doc = `{
     "info": {
         "description": "{{.Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "菜鳥工程師肉豬",
+            "url": "https://matthung0807.blogspot.com/"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/demo/hello": {
+        "/hello": {
             "get": {
+                "tags": [
+                    "Hello"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user name",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

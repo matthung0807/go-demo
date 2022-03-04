@@ -1,15 +1,24 @@
 host: localhost:8080
 info:
-  contact: {}
+  contact:
+    name: 菜鳥工程師肉豬
+    url: https://matthung0807.blogspot.com/
   description: Swagger API.
   title: Swagger Demo
   version: "1.0"
 paths:
-  /demo/hello:
+  /hello:
     get:
+      parameters:
+      - description: user name
+        in: query
+        name: name
+        type: string
       responses:
         "200":
           description: OK
           schema:
             type: string
+      tags:
+      - Hello
 swagger: "2.0"
