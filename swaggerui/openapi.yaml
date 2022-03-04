@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  contact: 
+    name: "菜鳥工程師肉豬"
+    url: "https://matthung0807.blogspot.com/"
+  title: "OpenAPI Demo"
+  description: OpenAPI.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080 
+    description: local
+paths:
+  "/hello":
+    get:
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+      tags:
+        - Hello
