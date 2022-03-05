@@ -9,31 +9,31 @@ import (
 
 var df = "2006-01-02"
 
-type CreatedDate time.Time
+type Date time.Time
 
-func (c *CreatedDate) UnmarshalText(text []byte) error {
+func (d *Date) UnmarshalText(text []byte) error {
 	t, err := time.Parse(df, string(text))
 	if err != nil {
 		return err
 	}
-	*c = CreatedDate(t)
+	*d = Date(t)
 	return nil
 }
 
-func (c CreatedDate) MarshalText() (text []byte, err error) {
-	s := time.Time(c).Format(df)
+func (d Date) MarshalText() (text []byte, err error) {
+	s := time.Time(d).Format(df)
 	return []byte(s), nil
 }
 
-func (c CreatedDate) String() string {
+func (c Date) String() string {
 	return time.Time(c).Format(df)
 }
 
 type Employee struct {
-	Id   int
-	Name string
-	Age  int
-	CreatedDate
+	Id          int
+	Name        string
+	Age         int
+	CreatedDate Date
 }
 
 func main() {
