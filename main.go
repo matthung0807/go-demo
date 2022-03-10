@@ -2,24 +2,10 @@ package main
 
 import "fmt"
 
-type Num int
-
-// func (n *Num) Count() {
-// 	*n = *n + 1
-// }
-
-func (n Num) Double() int {
-	return int(n) * 2
-}
-
 type Employee struct {
 	ID   int64
 	Name string
 	Age  int
-}
-
-func (emp *Employee) String() string {
-	return fmt.Sprintf("ID:%d:%s(%d)", emp.ID, emp.Name, emp.Age)
 }
 
 func main() {
@@ -28,8 +14,8 @@ func main() {
 	fmt.Println(&i)
 
 	// pointer indirection
-	var n Num = 10
-	fmt.Println((&n).Double())
+	var n *int = &i
+	fmt.Println((&*n))
 
 	// slice indexing operation
 	sl := []int{1, 2, 3}
@@ -46,5 +32,6 @@ func main() {
 	// composite literals
 	fmt.Println(&[]int{1, 2, 3})
 	fmt.Println(&map[int]string{1: "a", 2: "b"})
-	fmt.Println(&Employee{ID: 2, Name: "Mary", Age: 28})
+	fmt.Println(&Employee{}) // struct literal is unaddressable, but is legal because of syntax sugar
+	// equivalent to tmp := Employee{}; &tmp
 }
