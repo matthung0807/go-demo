@@ -4,56 +4,39 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/firehose"
+	"github.com/aws/aws-sdk-go-v2/service/firehose/types"
 )
 
-const (
-	accessKeyID = "AKIAIOSFODNN7EXAMPLE"                     // example
-	secretKey   = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" // example
-)
-
-func main() {
-	ctx := context.TODO()
-
-	client := NewS3Client(ctx)
-
-	bucketName := "s3-demo-bucket-202112151320"
-	output := GetBucketObjectOutput(ctx, client, bucketName)
-
-	for _, object := range output.Contents {
-		fmt.Printf("key=%s\n", aws.ToString(object.Key))
+func CreateInput(data string) *firehose.PutRecordInput {
+	deliveryStream := "PUT-s3-demo-bucket-202112151320" // stream name
+	return &firehose.PutRecordInput{
+		DeliveryStreamName: &deliveryStream,
+		Record: &types.Record{
+			Data: []byte(data),
+		},
 	}
 }
 
-func NewS3Client(ctx context.Context) *s3.Client {
-	creds := aws.NewCredentialsCache(
-		credentials.NewStaticCredentialsProvider(accessKeyID, secretKey, ""))
-
+func main() {
+	ctx := context.TODO()
 	cfg, err := config.LoadDefaultConfig(
 		ctx,
 		config.WithRegion("ap-northeast-1"),
-		config.WithCredentialsProvider(creds),
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	return s3.NewFromConfig(cfg) // Create an Amazon S3 service client
-}
+	client := firehose.NewFromConfig(cfg)
 
-func GetBucketObjectOutput(
-	ctx context.Context,
-	client *s3.Client,
-	bucketName string) *s3.ListObjectsV2Output {
-
-	output, err := client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
-		Bucket: aws.String(bucketName),
-	})
+	data := "Hello world"
+	input := CreateInput(data)
+	out, err := client.PutRecord(ctx, input)
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
 	}
-	return output
+	fmt.Println(out.RecordId) // 0xc000021ae0
+
 }
