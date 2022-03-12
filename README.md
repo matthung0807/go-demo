@@ -1,2 +1,2 @@
 # go-demo
-[Golang 從本機存取AWS S3 bucket](https://matthung0807.blogspot.com/2021/12/go-localhost-access-aws-s3-bucket.html)
+[Golang 本機發送資料到Kinesis Data Firehose](https://matthung0807.blogspot.com/2022/03/go-localhost-put-data-to-kinesis-data-firehose.html)
