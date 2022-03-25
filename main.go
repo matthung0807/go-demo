@@ -23,7 +23,10 @@ var s string = `
 
 func main() {
 	var emp Employee
-	json.Unmarshal([]byte(s), &emp) // json to struct
+	err := json.Unmarshal([]byte(s), &emp) // json to struct
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println(emp)
 
 	b, err := json.Marshal(emp) // struct to json
