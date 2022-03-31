@@ -31,17 +31,19 @@ func main() {
 		panic(err)
 	}
 
-	msg := "hello world from go"
-	smInput := &sqs.SendMessageInput{
-		DelaySeconds: 0,
-		MessageBody:  &msg,
-		QueueUrl:     urlOutput.QueueUrl,
+	rmInput := &sqs.ReceiveMessageInput{
+		QueueUrl:            urlOutput.QueueUrl,
+		MaxNumberOfMessages: 1,
+		VisibilityTimeout:   5,
 	}
 
-	smOutput, err := client.SendMessage(ctx, smInput)
+	rmOutput, err := client.ReceiveMessage(ctx, rmInput)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(*smOutput.MessageId)
+	if rmOutput.Messages != nil {
+		fmt.Println(*rmOutput.Messages[0].MessageId)
+		fmt.Println(*rmOutput.Messages[0].Body)
+	}
 }
