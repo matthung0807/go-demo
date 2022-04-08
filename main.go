@@ -45,7 +45,7 @@ func PrintAll[T Num](nums Nums[T]) {
 	}
 }
 
-func PrintMap[K comparable, T Num](m map[K]Nums[T]) {
+func PrintMap[K comparable, V Num](m map[K]Nums[V]) {
 	for k, v := range m {
 		fmt.Printf("key=%v, value=%v\n", k, v)
 	}
