@@ -1,16 +1,22 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
+
+	c "abc.com/demo/client"
+	s "abc.com/demo/server"
 )
 
 func main() {
-	http.HandleFunc("/hello", func(rw http.ResponseWriter, r *http.Request) {
-		name := r.URL.Query().Get("name") // get URL query string
-		content := fmt.Sprintf("hello, %s", name)
-		fmt.Fprint(rw, content) // write out content
-	})
-
+	server()
+	client()
 	http.ListenAndServe(":8080", nil)
+}
+
+func server() {
+	s.Route(s.NewWebhooksHandler(s.NewWebhooksService()))
+}
+
+func client() {
+	c.Route()
 }
