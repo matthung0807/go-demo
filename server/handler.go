@@ -32,7 +32,7 @@ func (wh *WebhooksHandler) Register(rw http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 		wh.WebhooksService.Save(req)
-		fmt.Fprint(rw, events)
+		rw.Write([]byte(events))
 	case http.MethodGet:
 		json.NewEncoder(rw).Encode(wh.WebhooksService.GetRegisteredUrls())
 	default:
