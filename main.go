@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -15,19 +14,17 @@ type Employee struct {
 func main() {
 	http.HandleFunc("/employee", func(rw http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-		case http.MethodPost:
-			var emp Employee
-			decoder := json.NewDecoder(r.Body)
-			err := decoder.Decode(&emp)
-			if err != nil {
-				panic(err)
+		case http.MethodGet:
+			emp := Employee{
+				Id:   1,
+				Name: "john",
+				Age:  33,
 			}
-			fmt.Println(emp)
+			rw.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(rw).Encode(emp)
 		default:
 			http.Error(rw, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
-
 	http.ListenAndServe(":8080", nil)
 }
