@@ -23,6 +23,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(emp)
+			rw.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(rw).Encode(emp)
 		default:
 			http.Error(rw, "Method not allowed", http.StatusMethodNotAllowed)
