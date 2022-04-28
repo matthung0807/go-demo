@@ -34,6 +34,7 @@ func (wh *WebhooksHandler) Register(rw http.ResponseWriter, r *http.Request) {
 		wh.WebhooksService.Save(req)
 		rw.Write([]byte(events))
 	case http.MethodGet:
+		rw.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(rw).Encode(wh.WebhooksService.GetRegisteredUrls())
 	default:
 		http.Error(rw, "Method not allowed", http.StatusMethodNotAllowed)
