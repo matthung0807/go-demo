@@ -16,7 +16,7 @@ func HelloHandler(rw http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 		fmt.Printf("Hello %s\n", req.Name)
-		fmt.Fprint(rw, "success")
+		rw.Write([]byte("success"))
 	default:
 		http.Error(rw, "Method not allowed", http.StatusMethodNotAllowed)
 	}

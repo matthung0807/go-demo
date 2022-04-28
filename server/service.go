@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -43,6 +42,5 @@ func (ws *WebhooksService) GetRegisteredUrls() []string {
 	for _, dto := range ws.GetRegisteredDtos() {
 		urls = append(urls, dto.URL)
 	}
-	fmt.Println(urls)
 	return urls
 }
