@@ -1,2 +1,2 @@
 # go-demo
-[Golang http handle POST JSON to struct](https://matthung0807.blogspot.com/2021/12/go-http-handle-post-json-to-struct.html)
+[Golang 發送請求](https://matthung0807.blogspot.com/2022/04/go-send-http-request.html)

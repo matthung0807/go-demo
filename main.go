@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -30,5 +32,38 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/send", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			resp, err := http.Post(
+				"http://localhost:8080/employee",
+				"application/json",
+				bytes.NewBuffer(genData()))
+
+			if err != nil {
+				panic(err)
+			}
+
+			b, err := io.ReadAll(resp.Body)
+			body := string(b)
+			fmt.Printf("body:%s\n", body)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
 	http.ListenAndServe(":8080", nil)
+}
+
+func genData() []byte {
+	emp := Employee{
+		Id:   1,
+		Name: "john",
+		Age:  33,
+	}
+
+	data, err := json.Marshal(&emp)
+	if err != nil {
+		panic(err)
+	}
+	return data
 }
