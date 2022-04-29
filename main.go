@@ -39,14 +39,18 @@ func main() {
 				"http://localhost:8080/employee",
 				"application/json",
 				bytes.NewBuffer(genData()))
-
 			if err != nil {
 				panic(err)
 			}
 
-			b, err := io.ReadAll(resp.Body)
-			body := string(b)
-			fmt.Printf("body:%s\n", body)
+			if resp.StatusCode == http.StatusOK {
+				b, err := io.ReadAll(resp.Body)
+				if err != nil {
+					panic(err)
+				}
+				body := string(b)
+				fmt.Printf("body:%s\n", body)
+			}
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
