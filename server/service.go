@@ -7,19 +7,19 @@ import (
 
 type WebhooksService struct {
 	registered map[string]WebhooksRegisterDto
-	mutex      sync.RWMutex
+	rwmu       sync.RWMutex
 }
 
 func NewWebhooksService() *WebhooksService {
 	return &WebhooksService{
 		registered: make(map[string]WebhooksRegisterDto),
-		mutex:      sync.RWMutex{},
+		rwmu:       sync.RWMutex{},
 	}
 }
 
 func (ws *WebhooksService) Save(req WebhooksRegisterRequest) {
-	ws.mutex.Lock()
-	defer ws.mutex.Unlock()
+	ws.rwmu.Lock()
+	defer ws.rwmu.Unlock()
 	ws.registered[req.URL] = WebhooksRegisterDto{
 		Name:      req.Name,
 		URL:       req.URL,
@@ -28,8 +28,8 @@ func (ws *WebhooksService) Save(req WebhooksRegisterRequest) {
 }
 
 func (ws *WebhooksService) GetRegisteredDtos() []WebhooksRegisterDto {
-	ws.mutex.RLock()
-	defer ws.mutex.RUnlock()
+	ws.rwmu.RLock()
+	defer ws.rwmu.RUnlock()
 	dtos := make([]WebhooksRegisterDto, 0)
 	for _, v := range ws.registered {
 		dtos = append(dtos, v)
