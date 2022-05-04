@@ -15,7 +15,7 @@ func main() {
 	client := NewS3Client(ctx)
 
 	bucketName := "s3-demo-bucket-202112151320"
-	output := GetBucketObjectOutput(ctx, client, bucketName)
+	output := GetListObjectsOutput(ctx, client, bucketName)
 
 	for _, object := range output.Contents {
 		fmt.Printf("key=%s\n", aws.ToString(object.Key))
@@ -33,7 +33,7 @@ func NewS3Client(ctx context.Context) *s3.Client {
 	return s3.NewFromConfig(cfg) // Create an Amazon S3 service client
 }
 
-func GetBucketObjectOutput(
+func GetListObjectsOutput(
 	ctx context.Context,
 	client *s3.Client,
 	bucketName string) *s3.ListObjectsV2Output {
