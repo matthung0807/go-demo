@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
@@ -14,12 +14,11 @@ func main() {
 
 	client := NewS3Client(ctx)
 
-	bucketName := "s3-demo-bucket-202112151320"
-	output := GetListObjectsOutput(ctx, client, bucketName)
-
-	for _, object := range output.Contents {
-		fmt.Printf("key=%s\n", aws.ToString(object.Key))
-	}
+	bucket := "s3-demo-bucket-202112151320"
+	key := "hello.txt"
+	in := CreateGetObjectInput(&bucket, &key)
+	content := GetObjectContent(ctx, client, in)
+	fmt.Printf("content=%s\n", content)
 }
 
 func NewS3Client(ctx context.Context) *s3.Client {
@@ -33,16 +32,24 @@ func NewS3Client(ctx context.Context) *s3.Client {
 	return s3.NewFromConfig(cfg) // Create an Amazon S3 service client
 }
 
-func GetListObjectsOutput(
-	ctx context.Context,
-	client *s3.Client,
-	bucketName string) *s3.ListObjectsV2Output {
+func CreateGetObjectInput(bucket *string, key *string) *s3.GetObjectInput {
+	return &s3.GetObjectInput{
+		Bucket: bucket,
+		Key:    key,
+	}
+}
 
-	output, err := client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
-		Bucket: aws.String(bucketName),
-	})
+func GetObjectContent(ctx context.Context, client *s3.Client, input *s3.GetObjectInput) string {
+	output, err := client.GetObject(ctx, input)
 	if err != nil {
 		panic(err)
 	}
-	return output
+
+	b, err := ioutil.ReadAll(output.Body)
+	if err != nil {
+		panic(err)
+	}
+	defer output.Body.Close()
+
+	return string(b)
 }
