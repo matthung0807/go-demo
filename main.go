@@ -16,8 +16,7 @@ func main() {
 
 	bucket := "s3-demo-bucket-202112151320"
 	key := "hello.txt"
-	in := CreateGetObjectInput(&bucket, &key)
-
+	in := CreateGetObjectInput(bucket, key)
 	content := GetObjectContent(ctx, client, in)
 	fmt.Printf("content=%s\n", content)
 }
@@ -33,10 +32,10 @@ func NewS3Client(ctx context.Context) *s3.Client {
 	return s3.NewFromConfig(cfg) // Create an Amazon S3 service client
 }
 
-func CreateGetObjectInput(bucket *string, key *string) *s3.GetObjectInput {
+func CreateGetObjectInput(bucket string, key string) *s3.GetObjectInput {
 	return &s3.GetObjectInput{
-		Bucket: bucket,
-		Key:    key,
+		Bucket: &bucket,
+		Key:    &key,
 	}
 }
 
