@@ -32,12 +32,12 @@ func NewS3Client(ctx context.Context) *s3.Client {
 
 func CreateInput() *s3.PutObjectInput {
 	bucket := "s3-demo-bucket-202112151320"
-	filename := "greeting.txt"
+	key := "greeting.txt"
 	reader := strings.NewReader("good day")
 
 	return &s3.PutObjectInput{
 		Bucket: &bucket,
-		Key:    &filename,
+		Key:    &key,
 		Body:   reader,
 	}
 }
