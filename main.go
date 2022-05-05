@@ -14,8 +14,8 @@ func main() {
 
 	client := NewS3Client(ctx)
 
-	bucketName := "s3-demo-bucket-202112151320"
-	output := GetListObjectsOutput(ctx, client, bucketName)
+	bucket := "s3-demo-bucket-202112151320"
+	output := GetListObjectsOutput(ctx, client, bucket)
 
 	for _, object := range output.Contents {
 		fmt.Printf("key=%s\n", aws.ToString(object.Key))
@@ -36,10 +36,10 @@ func NewS3Client(ctx context.Context) *s3.Client {
 func GetListObjectsOutput(
 	ctx context.Context,
 	client *s3.Client,
-	bucketName string) *s3.ListObjectsV2Output {
+	bucket string) *s3.ListObjectsV2Output {
 
 	output, err := client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
-		Bucket: aws.String(bucketName),
+		Bucket: aws.String(bucket),
 	})
 	if err != nil {
 		panic(err)
