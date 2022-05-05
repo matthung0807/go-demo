@@ -17,6 +17,7 @@ func main() {
 	bucket := "s3-demo-bucket-202112151320"
 	key := "hello.txt"
 	in := CreateGetObjectInput(&bucket, &key)
+
 	content := GetObjectContent(ctx, client, in)
 	fmt.Printf("content=%s\n", content)
 }
