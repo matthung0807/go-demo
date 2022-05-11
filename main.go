@@ -52,5 +52,5 @@ func main() {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println(results.SequenceNumber)
+	fmt.Println(*results.SequenceNumber)
 }
