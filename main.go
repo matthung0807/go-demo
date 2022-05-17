@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 
 	sqlcDb "abc.com/demo/db"
 
@@ -20,22 +19,26 @@ const (
 	SSL      = "disable"
 )
 
-func main() {
-	ctx := context.Background()
+func OpenDB(ctx context.Context) *sql.DB {
 	driver := "postgres"
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		HOST, PORT, USER, PASSWORD, DATABASE, SSL)
+
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
-		log.Panic("open database error")
+		panic("open database error")
 	}
+	return db
+}
 
+func main() {
+	ctx := context.Background()
+	db := OpenDB(ctx)
 	queries := sqlcDb.New(db)
 	employees, err := queries.GetAll(ctx)
 	if err != nil {
-		log.Panic("query employee error")
+		panic("query employee error")
 	}
 	fmt.Println(employees)
-
 }
