@@ -86,10 +86,7 @@ func Insert(ctx context.Context, name string, age int) error {
 	return nil
 }
 
-func Update(
-	ctx context.Context,
-	id int64, name string, age int) (int64, error) {
-
+func Update(ctx context.Context, id int64, name string, age int) (int64, error) {
 	db := OpenDB(ctx)
 	tx, err := db.Begin()
 	if err != nil {
@@ -104,7 +101,7 @@ func Update(
 	}
 	qr := sqlcDb.New(tx)
 	rows, err := qr.Update(ctx, params)
-	if err != nil || rows == 1 {
+	if err != nil {
 		return 0, err
 	}
 
