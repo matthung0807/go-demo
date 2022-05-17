@@ -97,7 +97,7 @@ func Update(ctx context.Context, id int64, name string, age int) (int64, error) 
 	params := sqlcDb.UpdateParams{
 		ID:   id,
 		Name: name,
-		Age:  sql.NullInt32{int32(33), true},
+		Age:  sql.NullInt32{int32(age), true},
 	}
 	qr := sqlcDb.New(tx)
 	rows, err := qr.Update(ctx, params)
