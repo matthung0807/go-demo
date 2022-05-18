@@ -6,17 +6,22 @@ import (
 	"abc.com/demo/model"
 )
 
-type EmployeeRepository struct {
+type EmployeeRepository interface {
+	GetAllEmployees() ([]model.Employee, error)
+	GetEmployeeByID(db *sql.DB, id int64) (*model.Employee, error)
+}
+
+type EmployeeRepositoryImpl struct {
 	db *sql.DB
 }
 
-func NewEmployeeRepository(db *sql.DB) EmployeeRepository {
-	return EmployeeRepository{
+func NewEmployeeRepository(db *sql.DB) *EmployeeRepositoryImpl {
+	return &EmployeeRepositoryImpl{
 		db: db,
 	}
 }
 
-func (er *EmployeeRepository) GetAllEmployees() ([]model.Employee, error) {
+func (er *EmployeeRepositoryImpl) GetAllEmployees() ([]model.Employee, error) {
 	rows, err := er.db.Query("SELECT id, name, age, created_at FROM employee")
 	if err != nil {
 		return nil, err
@@ -35,7 +40,7 @@ func (er *EmployeeRepository) GetAllEmployees() ([]model.Employee, error) {
 	return emps, nil
 }
 
-func (er *EmployeeRepository) GetEmployeeByID(db *sql.DB, id int64) (*model.Employee, error) {
+func (er *EmployeeRepositoryImpl) GetEmployeeByID(db *sql.DB, id int64) (*model.Employee, error) {
 	row := er.db.QueryRow("SELECT * FROM employee WHERE id = $1 LIMIT 1", id)
 	var emp model.Employee
 	err := row.Scan(

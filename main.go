@@ -11,7 +11,8 @@ func main() {
 	db := db.OpenDB()
 	defer db.Close()
 
-	er := repo.NewEmployeeRepository(db)
+	var er repo.EmployeeRepository
+	er = repo.NewEmployeeRepository(db)
 	emps, err := er.GetAllEmployees()
 	if err != nil {
 		panic(err)
