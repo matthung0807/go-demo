@@ -8,7 +8,7 @@ import (
 
 type EmployeeRepository interface {
 	GetAllEmployees() ([]model.Employee, error)
-	GetEmployeeByID(db *sql.DB, id int64) (*model.Employee, error)
+	GetEmployeeByID(id int64) (*model.Employee, error)
 }
 
 type EmployeeRepositoryImpl struct {
@@ -40,7 +40,7 @@ func (er *EmployeeRepositoryImpl) GetAllEmployees() ([]model.Employee, error) {
 	return emps, nil
 }
 
-func (er *EmployeeRepositoryImpl) GetEmployeeByID(db *sql.DB, id int64) (*model.Employee, error) {
+func (er *EmployeeRepositoryImpl) GetEmployeeByID(id int64) (*model.Employee, error) {
 	row := er.db.QueryRow("SELECT * FROM employee WHERE id = $1 LIMIT 1", id)
 	var emp model.Employee
 	err := row.Scan(

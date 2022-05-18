@@ -19,7 +19,7 @@ func main() {
 	}
 	fmt.Println(emps)
 
-	emp, err := er.GetEmployeeByID(db, 1)
+	emp, err := er.GetEmployeeByID(1)
 	if err != nil {
 		panic(err)
 	}
