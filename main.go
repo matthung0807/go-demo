@@ -1,87 +1,26 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
-	"time"
 
-	_ "github.com/lib/pq"
+	"abc.com/demo/db"
+	"abc.com/demo/repo"
 )
-
-type Employee struct {
-	ID        int64
-	Name      string
-	Age       int
-	CreatedAt time.Time
-}
-
-const (
-	HOST     = "localhost"
-	PORT     = "5432"
-	DATABASE = "postgres"
-	USER     = "admin"
-	PASSWORD = "12345"
-	SSL      = "disable"
-)
-
-func connect() *sql.DB {
-	driver := "postgres"
-	dsn := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		HOST, PORT, USER, PASSWORD, DATABASE, SSL)
-
-	db, err := sql.Open(driver, dsn)
-	if err != nil {
-		panic("open database error")
-	}
-	return db
-}
 
 func main() {
-	db := connect()
-	emps, err := GetAllEmployees(db)
+	db := db.OpenDB()
+	defer db.Close()
+
+	er := repo.NewEmployeeRepository(db)
+	emps, err := er.GetAllEmployees()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(emps) // [{1 john 33 2022-01-06 10:28:51.979435 +0000 +0000}]
+	fmt.Println(emps)
 
-	emp, err := GetEmployeeByID(db, 1)
+	emp, err := er.GetEmployeeByID(db, 1)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(*emp) // {1 john 33 2022-01-06 10:28:51.979435 +0000 +0000}
-}
-
-func GetAllEmployees(db *sql.DB) ([]Employee, error) {
-	rows, err := db.Query("SELECT id, name, age, created_at FROM employee")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var emps []Employee
-	for rows.Next() {
-		var e Employee
-		err = rows.Scan(&e.ID, &e.Name, &e.Age, &e.CreatedAt)
-		if err != nil {
-			return nil, err
-		}
-		emps = append(emps, e)
-	}
-	return emps, nil
-}
-
-func GetEmployeeByID(db *sql.DB, id int64) (*Employee, error) {
-	row := db.QueryRow("SELECT * FROM employee WHERE id = $1 LIMIT 1", id)
-	var emp Employee
-	err := row.Scan(
-		&emp.ID,
-		&emp.Name,
-		&emp.Age,
-		&emp.CreatedAt,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &emp, nil
+	fmt.Println(*emp)
 }
