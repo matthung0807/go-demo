@@ -6,11 +6,6 @@ import (
 	"abc.com/demo/model"
 )
 
-type EmployeeRepository interface {
-	GetAllEmployees() ([]model.Employee, error)
-	GetEmployeeByID(id int64) (*model.Employee, error)
-}
-
 type EmployeeRepositoryImpl struct {
 	db *sql.DB
 }
