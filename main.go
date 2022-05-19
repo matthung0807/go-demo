@@ -30,3 +30,11 @@ func main() {
 	}
 	fmt.Println(*emp)
 }
+
+func GetEmployeeNumber(er EmployeeRepository) int {
+	emps, err := er.GetAllEmployees()
+	if err != nil {
+		panic("error")
+	}
+	return len(emps)
+}
