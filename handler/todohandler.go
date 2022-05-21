@@ -21,14 +21,19 @@ type TodoService interface {
 
 func Create(ts TodoService) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		var todo model.Todo
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "read request body error", http.StatusBadRequest)
 			return
 		}
-		json.Unmarshal(b, &todo)
-		result, err := ts.CreateTodo(&todo)
+		todo := &model.Todo{}
+		err = json.Unmarshal(b, todo)
+		if err != nil {
+			log.Printf("error=%v\n", err)
+			http.Error(w, "unmarshal json error", http.StatusBadRequest)
+			return
+		}
+		result, err := ts.CreateTodo(todo)
 		if err != nil {
 			http.Error(w, "create todo error", http.StatusInternalServerError)
 			return
@@ -59,18 +64,72 @@ func GetByID(ts TodoService) httprouter.Handle {
 
 func GetByPage(ts TodoService) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		// TODO
+		page, err := strconv.Atoi(ps.ByName("page"))
+		if err != nil {
+			log.Printf("error=%v\n", err)
+			http.Error(w, "parse page error", http.StatusBadRequest)
+			return
+		}
+
+		result, err := ts.GetTodoByPage(page, 10)
+		if err != nil {
+			log.Printf("error=%v\n", err)
+			http.Error(w, "get todolist by page error", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(&result)
 	}
 }
 
 func Update(ts TodoService) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		// TODO
+		b, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("error=%v\n", err)
+			http.Error(w, "read request body error", http.StatusBadRequest)
+			return
+		}
+		todo := &model.Todo{}
+		err = json.Unmarshal(b, todo)
+		if err != nil {
+			log.Printf("error=%v\n", err)
+			http.Error(w, "unmarshal json error", http.StatusBadRequest)
+			return
+		}
+		result, err := ts.UpdateTodo(todo)
+		if err != nil {
+			log.Printf("error=%v\n", err)
+			http.Error(w, "update todo error", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(&result)
 	}
 }
 
 func Delete(ts TodoService) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		// TODO
+		b, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("error=%v\n", err)
+			http.Error(w, "read request body error", http.StatusBadRequest)
+			return
+		}
+		todo := &model.Todo{}
+		err = json.Unmarshal(b, todo)
+		if err != nil {
+			log.Printf("error=%v\n", err)
+			http.Error(w, "unmarshal json error", http.StatusBadRequest)
+			return
+		}
+		result, err := ts.DeleteTodo(todo.ID)
+		if err != nil {
+			log.Printf("error=%v\n", err)
+			http.Error(w, "delete todo error", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(&result)
 	}
 }
