@@ -11,14 +11,23 @@ import (
 )
 
 func main() {
-	http.ListenAndServe(":8080", route())
+	http.ListenAndServe(":8080", router())
 }
 
-func route() http.Handler {
-	tr := repo.NewTodoRepository(db.OpenDB())
-	ts := service.NewTodoService(tr)
+func router() http.Handler {
+	ts := todoService()
 	router := httprouter.New()
 	router.POST("/todo", handler.Create(ts))
 	router.GET("/todo/:id", handler.GetByID(ts))
+	router.GET("/todo/:page", handler.GetByPage(ts))
+	router.PUT("/todo", handler.Update(ts))
+	router.DELETE("/todo", handler.Delete(ts))
 	return router
+}
+
+func todoService() handler.TodoService {
+	db := db.OpenDB()
+	tr := repo.NewTodoRepository(db)
+	ts := service.NewTodoService(tr)
+	return ts
 }

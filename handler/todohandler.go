@@ -56,3 +56,21 @@ func GetByID(ts TodoService) httprouter.Handle {
 		json.NewEncoder(w).Encode(&result)
 	}
 }
+
+func GetByPage(ts TodoService) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		// TODO
+	}
+}
+
+func Update(ts TodoService) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		// TODO
+	}
+}
+
+func Delete(ts TodoService) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		// TODO
+	}
+}
