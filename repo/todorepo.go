@@ -12,18 +12,17 @@ type Todo struct {
 	UpdatedAt   time.Time
 	Deleted     bool
 }
-
-type TodoRepository struct {
+type TodoRepositoryImpl struct {
 	db *sql.DB
 }
 
-func NewTodoRepository(db *sql.DB) *TodoRepository {
-	return &TodoRepository{
+func NewTodoRepository(db *sql.DB) *TodoRepositoryImpl {
+	return &TodoRepositoryImpl{
 		db: db,
 	}
 }
 
-func (tr *TodoRepository) Insert(todo *Todo) (*Todo, error) {
+func (tr *TodoRepositoryImpl) Insert(todo *Todo) (*Todo, error) {
 	tx, err := tr.db.Begin()
 	if err != nil {
 		return nil, err
@@ -47,15 +46,60 @@ func (tr *TodoRepository) Insert(todo *Todo) (*Todo, error) {
 	return &t, nil
 }
 
-func (tr *TodoRepository) GetByID(id int64) *Todo {
-	return nil
+func (tr *TodoRepositoryImpl) GetByID(id int64) (*Todo, error) {
+	sql := "SELECT * FROM todo WHERE id = $1"
+	row := tr.db.QueryRow(sql, id)
+	var todo Todo
+	err := row.Scan(
+		&todo.ID,
+		&todo.Description,
+		&todo.CreatedAt,
+		&todo.Deleted,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &todo, nil
 }
 
-func (tr *TodoRepository) GetByPage(page int, size int) []Todo {
-	return nil
+func (tr *TodoRepositoryImpl) GetByPage(page int, size int) ([]Todo, int, error) {
+	tx, err := tr.db.Begin()
+	if err != nil {
+		return nil, 0, err
+	}
+	sql := "SELECT FROM todo LIMIT $1 OFFSET $2"
+	rows, err := tx.Query(sql, size, page-1)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	var todos []Todo
+	for rows.Next() {
+		var todo Todo
+		err = rows.Scan(
+			&todo.ID,
+			&todo.Description,
+			&todo.CreatedAt,
+			&todo.UpdatedAt,
+		)
+		if err != nil {
+			return nil, 0, err
+		}
+		todos = append(todos, todo)
+	}
+
+	sql = "SELECT count(*) FROM todo"
+	c := 0
+	err = tx.QueryRow(sql).Scan(&c)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return todos, c, nil
 }
 
-func (tr *TodoRepository) Update(todo *Todo) (*Todo, error) {
+func (tr *TodoRepositoryImpl) Update(todo *Todo) (*Todo, error) {
 	tx, err := tr.db.Begin()
 	if err != nil {
 		return nil, err
@@ -84,7 +128,7 @@ func (tr *TodoRepository) Update(todo *Todo) (*Todo, error) {
 	return &t, nil
 }
 
-func (tr *TodoRepository) Delete(id int64) (*Todo, error) {
+func (tr *TodoRepositoryImpl) Delete(id int64) (*Todo, error) {
 	tx, err := tr.db.Begin()
 	if err != nil {
 		return nil, err
