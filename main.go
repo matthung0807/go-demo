@@ -7,16 +7,18 @@ import (
 	"abc.com/demo/handler"
 	"abc.com/demo/repo"
 	"abc.com/demo/service"
+	"github.com/julienschmidt/httprouter"
 )
 
 func main() {
-
+	http.ListenAndServe(":8080", route())
 }
 
-func route() {
-
+func route() http.Handler {
 	tr := repo.NewTodoRepository(db.OpenDB())
 	ts := service.NewTodoService(tr)
-	th := handler.NewTodoHandler(ts)
-	http.HandleFunc("/todo", handler.HandleTodo(th))
+	router := httprouter.New()
+	router.POST("/todo", handler.Create(ts))
+	router.GET("/todo/:id", handler.GetByID(ts))
+	return router
 }
