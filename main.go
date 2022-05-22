@@ -3,14 +3,16 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 func main() {
-	http.HandleFunc("/hello", func(rw http.ResponseWriter, r *http.Request) {
-		name := r.URL.Query().Get("name") // get URL query string
-		content := fmt.Sprintf("hello, %s", name)
-		fmt.Fprint(rw, content) // write out content
-	})
+	router := httprouter.New()
+	router.GET("/hello/:name", Hello)
+	http.ListenAndServe(":8080", router)
+}
 
-	http.ListenAndServe(":8080", nil)
+func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	fmt.Fprintf(w, "hello, %s\n", ps.ByName("name"))
 }
