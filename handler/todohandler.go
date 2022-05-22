@@ -35,6 +35,7 @@ func Create(ts TodoService) httprouter.Handle {
 		}
 		result, err := ts.CreateTodo(todo)
 		if err != nil {
+			log.Printf("error=%v\n", err)
 			http.Error(w, "create todo error", http.StatusInternalServerError)
 			return
 		}
@@ -64,7 +65,7 @@ func GetByID(ts TodoService) httprouter.Handle {
 
 func GetByPage(ts TodoService) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		page, err := strconv.Atoi(ps.ByName("page"))
+		page, err := strconv.Atoi(r.URL.Query().Get("page"))
 		if err != nil {
 			log.Printf("error=%v\n", err)
 			http.Error(w, "parse page error", http.StatusBadRequest)

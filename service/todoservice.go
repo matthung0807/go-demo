@@ -1,6 +1,9 @@
 package service
 
 import (
+	"database/sql"
+	"time"
+
 	"abc.com/demo/model"
 	"abc.com/demo/repo"
 )
@@ -74,16 +77,35 @@ func (ts *TodoServiceImpl) DeleteTodo(id int64) (*model.Todo, error) {
 
 func modelToEntity(m *model.Todo) *repo.Todo {
 	return &repo.Todo{
+		ID:          m.ID,
 		Description: m.Description,
 		CreatedAt:   m.CreatedAt,
-		UpdatedAt:   m.UpdatedAt,
+		UpdatedAt:   timeToNullTime(m.UpdatedAt),
 	}
 }
 
 func entityToModel(e *repo.Todo) *model.Todo {
 	return &model.Todo{
+		ID:          e.ID,
 		Description: e.Description,
 		CreatedAt:   e.CreatedAt,
-		UpdatedAt:   e.UpdatedAt,
+		UpdatedAt:   nullTimetoTime(e.UpdatedAt),
 	}
+}
+
+func timeToNullTime(t *time.Time) sql.NullTime {
+	if t == nil {
+		return sql.NullTime{}
+	}
+	return sql.NullTime{
+		Time:  *t,
+		Valid: true,
+	}
+}
+
+func nullTimetoTime(st sql.NullTime) *time.Time {
+	if st.Valid == true {
+		return &st.Time
+	}
+	return nil
 }

@@ -9,7 +9,7 @@ type Todo struct {
 	ID          int64
 	Description string
 	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	UpdatedAt   sql.NullTime
 	Deleted     bool
 }
 type TodoRepositoryImpl struct {
@@ -34,7 +34,14 @@ func (tr *TodoRepositoryImpl) Insert(todo *Todo) (*Todo, error) {
             VALUES ($1, $2, $3) 
             RETURNING *`
 
-	err = tx.QueryRow(sql, &todo.Description, time.Now(), false).Scan(&t)
+	err = tx.QueryRow(sql, &todo.Description, time.Now(), false).
+		Scan(
+			&t.ID,
+			&t.Description,
+			&t.CreatedAt,
+			&t.UpdatedAt,
+			&t.Deleted,
+		)
 	if err != nil {
 		return nil, err
 	}
@@ -54,6 +61,7 @@ func (tr *TodoRepositoryImpl) GetByID(id int64) (*Todo, error) {
 		&todo.ID,
 		&todo.Description,
 		&todo.CreatedAt,
+		&todo.UpdatedAt,
 		&todo.Deleted,
 	)
 	if err != nil {
@@ -67,7 +75,7 @@ func (tr *TodoRepositoryImpl) GetByPage(page int, size int) ([]Todo, int, error)
 	if err != nil {
 		return nil, 0, err
 	}
-	sql := "SELECT FROM todo LIMIT $1 OFFSET $2"
+	sql := "SELECT * FROM todo LIMIT $1 OFFSET $2"
 	rows, err := tx.Query(sql, size, page-1)
 	if err != nil {
 		return nil, 0, err
@@ -82,6 +90,7 @@ func (tr *TodoRepositoryImpl) GetByPage(page int, size int) ([]Todo, int, error)
 			&todo.Description,
 			&todo.CreatedAt,
 			&todo.UpdatedAt,
+			&todo.Deleted,
 		)
 		if err != nil {
 			return nil, 0, err
@@ -106,7 +115,7 @@ func (tr *TodoRepositoryImpl) Update(todo *Todo) (*Todo, error) {
 	}
 	defer tx.Rollback()
 
-	sql := `UPDATE employee
+	sql := `UPDATE todo
             SET 
                 description = $1, 
                 updated_at = $2
@@ -115,7 +124,14 @@ func (tr *TodoRepositoryImpl) Update(todo *Todo) (*Todo, error) {
 
 	t := Todo{}
 	err = tx.QueryRow(
-		sql, &todo.Description, time.Now(), &todo.ID).Scan(&t)
+		sql, &todo.Description, time.Now(), &todo.ID).
+		Scan(
+			&t.ID,
+			&t.Description,
+			&t.CreatedAt,
+			&t.UpdatedAt,
+			&t.Deleted,
+		)
 
 	if err != nil {
 		return nil, err
@@ -135,13 +151,20 @@ func (tr *TodoRepositoryImpl) Delete(id int64) (*Todo, error) {
 	}
 	defer tx.Rollback()
 
-	sql := `UPDATE employee
+	sql := `UPDATE todo
             SET deleted = $1
             WHERE id = $2
             RETURNING *`
 
 	t := Todo{}
-	err = tx.QueryRow(sql, false, id).Scan(&t)
+	err = tx.QueryRow(sql, true, id).
+		Scan(
+			&t.ID,
+			&t.Description,
+			&t.CreatedAt,
+			&t.UpdatedAt,
+			&t.Deleted,
+		)
 
 	if err != nil {
 		return nil, err

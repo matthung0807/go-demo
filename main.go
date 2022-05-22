@@ -19,7 +19,7 @@ func router() http.Handler {
 	router := httprouter.New()
 	router.POST("/todo", handler.Create(ts))
 	router.GET("/todo/:id", handler.GetByID(ts))
-	router.GET("/todo/:page", handler.GetByPage(ts))
+	router.GET("/todo", handler.GetByPage(ts))
 	router.PUT("/todo", handler.Update(ts))
 	router.DELETE("/todo", handler.Delete(ts))
 	return router
