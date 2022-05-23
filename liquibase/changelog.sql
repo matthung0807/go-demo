@@ -8,3 +8,9 @@ CREATE TABLE IF NOT EXISTS todo (
     updated_at timestamp,
     deleted BOOLEAN DEFAULT FALSE NOT NULL
 );
+
+--changeset todo:2
+INSERT INTO todo (description) VALUES
+('Workout'),
+('Buy grocery'),
+('Write blog');
