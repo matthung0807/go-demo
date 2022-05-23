@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"testing"
 
 	"abc.com/demo/model"
@@ -15,35 +16,35 @@ type TodoRepositoryMock struct {
 	deleteFn    func(id int64) (*repo.Todo, error)
 }
 
-func (trMock *TodoRepositoryMock) Insert(todo *repo.Todo) (*repo.Todo, error) {
-	return trMock.insertFn(todo)
+func (mock *TodoRepositoryMock) Insert(todo *repo.Todo) (*repo.Todo, error) {
+	return mock.insertFn(todo)
 }
 
-func (trMock *TodoRepositoryMock) GetByID(id int64) (*repo.Todo, error) {
-	return trMock.getByIDFn(id)
+func (mock *TodoRepositoryMock) GetByID(id int64) (*repo.Todo, error) {
+	return mock.getByIDFn(id)
 }
 
-func (trMock *TodoRepositoryMock) GetByPage(page int, size int) ([]repo.Todo, int, error) {
-	return trMock.getByPageFn(page, size)
+func (mock *TodoRepositoryMock) GetByPage(page int, size int) ([]repo.Todo, int, error) {
+	return mock.getByPageFn(page, size)
 }
 
-func (trMock *TodoRepositoryMock) Update(todo *repo.Todo) (*repo.Todo, error) {
-	return trMock.updateFn(todo)
+func (mock *TodoRepositoryMock) Update(todo *repo.Todo) (*repo.Todo, error) {
+	return mock.updateFn(todo)
 }
 
-func (trMock *TodoRepositoryMock) Delete(id int64) (*repo.Todo, error) {
-	return trMock.deleteFn(id)
+func (mock *TodoRepositoryMock) Delete(id int64) (*repo.Todo, error) {
+	return mock.deleteFn(id)
 }
 
-func TestCreateTodo_Success(t *testing.T) {
-	mock := &TodoRepositoryMock{}
-	mock.insertFn = func(todo *repo.Todo) (*repo.Todo, error) {
-		return &repo.Todo{
-			ID: todo.ID,
-		}, nil
-	}
-
+func TestCreateTodo(t *testing.T) {
 	testCase := struct{ id, expected int64 }{1, 1}
+	mock := &TodoRepositoryMock{
+		insertFn: func(todo *repo.Todo) (*repo.Todo, error) {
+			return &repo.Todo{
+				ID: todo.ID,
+			}, nil
+		},
+	}
 
 	ts := NewTodoService(mock)
 	result, err := ts.CreateTodo(&model.Todo{ID: testCase.id})
@@ -51,7 +52,70 @@ func TestCreateTodo_Success(t *testing.T) {
 		t.Errorf("unexpected error, err=%v", err)
 	}
 	if result.ID != 1 {
-		t.Errorf("expected id=%v, but %v", testCase.expected, result.ID)
+		t.Errorf("expect id=%v, but %v",
+			testCase.expected, result.ID)
+	}
+
+}
+
+func TestCreateTodo_Fail(t *testing.T) {
+	testCase := struct{ id, expected int64 }{1, 1}
+	mock := &TodoRepositoryMock{
+		insertFn: func(todo *repo.Todo) (*repo.Todo, error) {
+			return nil, errors.New("error")
+		},
+	}
+
+	ts := NewTodoService(mock)
+	_, err := ts.CreateTodo(&model.Todo{ID: testCase.id})
+	if err == nil {
+		t.Errorf("unexpected success")
+	}
+
+}
+
+func TestGetByID(t *testing.T) {
+	testCase := struct {
+		id       int64
+		expected string
+	}{
+		1, "test",
+	}
+
+	mock := &TodoRepositoryMock{
+		getByIDFn: func(id int64) (*repo.Todo, error) {
+			return &repo.Todo{Description: "test"}, nil
+		},
+	}
+	ts := NewTodoService(mock)
+	result, err := ts.GetTodoById(testCase.id)
+	if err != nil {
+		t.Errorf("unexpected error, err=%v", err)
+	}
+	if result.Description != testCase.expected {
+		t.Errorf("expect description=%v, but %v",
+			testCase.expected, result.Description)
+	}
+
+}
+
+func TestGetByID_Fail(t *testing.T) {
+	testCase := struct {
+		id       int64
+		expected string
+	}{
+		1, "test",
+	}
+	mock := &TodoRepositoryMock{
+		getByIDFn: func(id int64) (*repo.Todo, error) {
+			return nil, errors.New("error")
+		},
+	}
+
+	ts := NewTodoService(mock)
+	_, err := ts.GetTodoById(testCase.id)
+	if err == nil {
+		t.Errorf("unexpected success")
 	}
 
 }
