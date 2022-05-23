@@ -1,2 +1,2 @@
 # go-demo
-Go Demo
+Golang TODO list REST API練習
