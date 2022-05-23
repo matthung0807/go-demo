@@ -26,11 +26,11 @@ func NewTodoService(todoRepo TodoRepository) *TodoServiceImpl {
 }
 
 func (ts *TodoServiceImpl) CreateTodo(m *model.Todo) (*model.Todo, error) {
-	e, err := ts.todoRepo.Insert(modelToEntity(m))
+	e, err := ts.todoRepo.Insert(toEntity(m))
 	if err != nil {
 		return nil, err
 	}
-	return entityToModel(e), nil
+	return toModel(e), nil
 }
 
 func (ts *TodoServiceImpl) GetTodoById(id int64) (*model.Todo, error) {
@@ -38,7 +38,7 @@ func (ts *TodoServiceImpl) GetTodoById(id int64) (*model.Todo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return entityToModel(e), nil
+	return toModel(e), nil
 }
 
 func (ts *TodoServiceImpl) GetTodoByPage(page int, size int) (*model.Page, error) {
@@ -48,7 +48,7 @@ func (ts *TodoServiceImpl) GetTodoByPage(page int, size int) (*model.Page, error
 	}
 	var todolist []model.Todo
 	for _, e := range es {
-		todolist = append(todolist, *entityToModel(&e))
+		todolist = append(todolist, *toModel(&e))
 	}
 	p := &model.Page{
 		Todolist: todolist,
@@ -60,11 +60,11 @@ func (ts *TodoServiceImpl) GetTodoByPage(page int, size int) (*model.Page, error
 }
 
 func (ts *TodoServiceImpl) UpdateTodo(m *model.Todo) (*model.Todo, error) {
-	e, err := ts.todoRepo.Update(modelToEntity(m))
+	e, err := ts.todoRepo.Update(toEntity(m))
 	if err != nil {
 		return nil, err
 	}
-	return entityToModel(e), nil
+	return toModel(e), nil
 }
 
 func (ts *TodoServiceImpl) DeleteTodo(id int64) (*model.Todo, error) {
@@ -72,28 +72,30 @@ func (ts *TodoServiceImpl) DeleteTodo(id int64) (*model.Todo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return entityToModel(e), nil
+	return toModel(e), nil
 }
 
-func modelToEntity(m *model.Todo) *repo.Todo {
+func toEntity(m *model.Todo) *repo.Todo {
 	return &repo.Todo{
 		ID:          m.ID,
 		Description: m.Description,
 		CreatedAt:   m.CreatedAt,
-		UpdatedAt:   timeToNullTime(m.UpdatedAt),
+		UpdatedAt:   toNullTime(m.UpdatedAt),
+		Deleted:     m.Deleted,
 	}
 }
 
-func entityToModel(e *repo.Todo) *model.Todo {
+func toModel(e *repo.Todo) *model.Todo {
 	return &model.Todo{
 		ID:          e.ID,
 		Description: e.Description,
 		CreatedAt:   e.CreatedAt,
-		UpdatedAt:   nullTimetoTime(e.UpdatedAt),
+		UpdatedAt:   toTime(e.UpdatedAt),
+		Deleted:     e.Deleted,
 	}
 }
 
-func timeToNullTime(t *time.Time) sql.NullTime {
+func toNullTime(t *time.Time) sql.NullTime {
 	if t == nil {
 		return sql.NullTime{}
 	}
@@ -103,7 +105,7 @@ func timeToNullTime(t *time.Time) sql.NullTime {
 	}
 }
 
-func nullTimetoTime(st sql.NullTime) *time.Time {
+func toTime(st sql.NullTime) *time.Time {
 	if st.Valid == true {
 		return &st.Time
 	}

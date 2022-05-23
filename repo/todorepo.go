@@ -23,18 +23,12 @@ func NewTodoRepository(db *sql.DB) *TodoRepositoryImpl {
 }
 
 func (tr *TodoRepositoryImpl) Insert(todo *Todo) (*Todo, error) {
-	tx, err := tr.db.Begin()
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
 	var t = Todo{}
 	sql := `INSERT INTO todo (description) 
-            VALUES ($1, $2, $3) 
+            VALUES ($1) 
             RETURNING *`
 
-	err = tx.QueryRow(sql, &todo.Description).
+	tr.db.QueryRow(sql, &todo.Description).
 		Scan(
 			&t.ID,
 			&t.Description,
@@ -42,14 +36,6 @@ func (tr *TodoRepositoryImpl) Insert(todo *Todo) (*Todo, error) {
 			&t.UpdatedAt,
 			&t.Deleted,
 		)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = tx.Commit(); err != nil {
-		return nil, err
-	}
-
 	return &t, nil
 }
 
@@ -115,12 +101,6 @@ func (tr *TodoRepositoryImpl) GetByPage(page int, size int) ([]Todo, int, error)
 }
 
 func (tr *TodoRepositoryImpl) Update(todo *Todo) (*Todo, error) {
-	tx, err := tr.db.Begin()
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
 	sql := `UPDATE todo
             SET 
                 description = $1, 
@@ -129,7 +109,7 @@ func (tr *TodoRepositoryImpl) Update(todo *Todo) (*Todo, error) {
             RETURNING *`
 
 	t := Todo{}
-	err = tx.QueryRow(
+	tr.db.QueryRow(
 		sql, &todo.Description, time.Now(), &todo.ID).
 		Scan(
 			&t.ID,
@@ -138,32 +118,17 @@ func (tr *TodoRepositoryImpl) Update(todo *Todo) (*Todo, error) {
 			&t.UpdatedAt,
 			&t.Deleted,
 		)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if err = tx.Commit(); err != nil {
-		return nil, err
-	}
-
 	return &t, nil
 }
 
 func (tr *TodoRepositoryImpl) Delete(id int64) (*Todo, error) {
-	tx, err := tr.db.Begin()
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
 	sql := `UPDATE todo
             SET deleted = $1
             WHERE id = $2
             RETURNING *`
 
 	t := Todo{}
-	err = tx.QueryRow(sql, true, id).
+	tr.db.QueryRow(sql, true, id).
 		Scan(
 			&t.ID,
 			&t.Description,
@@ -171,14 +136,5 @@ func (tr *TodoRepositoryImpl) Delete(id int64) (*Todo, error) {
 			&t.UpdatedAt,
 			&t.Deleted,
 		)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if err = tx.Commit(); err != nil {
-		return nil, err
-	}
-
 	return &t, nil
 }
