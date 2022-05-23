@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"abc.com/demo/model"
 	"abc.com/demo/repo"
@@ -88,7 +89,7 @@ func TestGetByID(t *testing.T) {
 		},
 	}
 	ts := NewTodoService(mock)
-	result, err := ts.GetTodoById(testCase.id)
+	result, err := ts.GetTodoByID(testCase.id)
 	if err != nil {
 		t.Errorf("unexpected error, err=%v", err)
 	}
@@ -113,9 +114,37 @@ func TestGetByID_Fail(t *testing.T) {
 	}
 
 	ts := NewTodoService(mock)
-	_, err := ts.GetTodoById(testCase.id)
+	_, err := ts.GetTodoByID(testCase.id)
 	if err == nil {
 		t.Errorf("unexpected success")
+	}
+
+}
+
+func TestUpdateTodo(t *testing.T) {
+	now := time.Now()
+	testCase := struct {
+		id        int64
+		updatedAt time.Time
+		expected  time.Time
+	}{1, now, now}
+	mock := &TodoRepositoryMock{
+		updateFn: func(todo *repo.Todo) (*repo.Todo, error) {
+			return &repo.Todo{
+				ID:        todo.ID,
+				UpdatedAt: todo.UpdatedAt,
+			}, nil
+		},
+	}
+
+	ts := NewTodoService(mock)
+	result, err := ts.UpdateTodo(&model.Todo{ID: testCase.id})
+	if err != nil {
+		t.Errorf("unexpected error, err=%v", err)
+	}
+	if result.ID != 1 {
+		t.Errorf("expect updatedAt=%v, but %v",
+			testCase.expected, result.UpdatedAt)
 	}
 
 }

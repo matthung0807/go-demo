@@ -13,7 +13,7 @@ import (
 
 type TodoService interface {
 	CreateTodo(m *model.Todo) (*model.Todo, error)
-	GetTodoById(id int64) (*model.Todo, error)
+	GetTodoByID(id int64) (*model.Todo, error)
 	GetTodoByPage(page int, size int) (*model.Page, error)
 	UpdateTodo(m *model.Todo) (*model.Todo, error)
 	DeleteTodo(id int64) (*model.Todo, error)
@@ -52,7 +52,7 @@ func GetByID(ts TodoService) httprouter.Handle {
 			http.Error(w, "parse id error", http.StatusBadRequest)
 			return
 		}
-		result, err := ts.GetTodoById(id)
+		result, err := ts.GetTodoByID(id)
 		if err != nil {
 			log.Printf("error=%v\n", err)
 			http.Error(w, "get todo error", http.StatusInternalServerError)

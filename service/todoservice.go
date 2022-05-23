@@ -33,7 +33,7 @@ func (ts *TodoServiceImpl) CreateTodo(m *model.Todo) (*model.Todo, error) {
 	return toModel(e), nil
 }
 
-func (ts *TodoServiceImpl) GetTodoById(id int64) (*model.Todo, error) {
+func (ts *TodoServiceImpl) GetTodoByID(id int64) (*model.Todo, error) {
 	e, err := ts.todoRepo.GetByID(id)
 	if err != nil {
 		return nil, err
