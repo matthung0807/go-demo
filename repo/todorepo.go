@@ -30,11 +30,11 @@ func (tr *TodoRepositoryImpl) Insert(todo *Todo) (*Todo, error) {
 	defer tx.Rollback()
 
 	var t = Todo{}
-	sql := `INSERT INTO todo (description, created_at, deleted) 
+	sql := `INSERT INTO todo (description) 
             VALUES ($1, $2, $3) 
             RETURNING *`
 
-	err = tx.QueryRow(sql, &todo.Description, time.Now(), false).
+	err = tx.QueryRow(sql, &todo.Description).
 		Scan(
 			&t.ID,
 			&t.Description,
@@ -54,7 +54,9 @@ func (tr *TodoRepositoryImpl) Insert(todo *Todo) (*Todo, error) {
 }
 
 func (tr *TodoRepositoryImpl) GetByID(id int64) (*Todo, error) {
-	sql := "SELECT * FROM todo WHERE id = $1"
+	sql := `SELECT * FROM todo 
+			WHERE id = $1 
+				AND deleted = false`
 	row := tr.db.QueryRow(sql, id)
 	var todo Todo
 	err := row.Scan(
@@ -75,8 +77,10 @@ func (tr *TodoRepositoryImpl) GetByPage(page int, size int) ([]Todo, int, error)
 	if err != nil {
 		return nil, 0, err
 	}
-	sql := "SELECT * FROM todo LIMIT $1 OFFSET $2"
-	rows, err := tx.Query(sql, size, page-1)
+	sql := `SELECT * FROM todo 
+			WHERE deleted = false 
+			LIMIT $1 OFFSET $2`
+	rows, err := tx.Query(sql, size, (page-1)*size)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -98,7 +102,9 @@ func (tr *TodoRepositoryImpl) GetByPage(page int, size int) ([]Todo, int, error)
 		todos = append(todos, todo)
 	}
 
-	sql = "SELECT count(*) FROM todo"
+	sql = `SELECT count(*) 
+			FROM todo 
+			WHERE deleted = false`
 	c := 0
 	err = tx.QueryRow(sql).Scan(&c)
 	if err != nil {
