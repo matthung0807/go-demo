@@ -35,7 +35,8 @@ func main() {
 	http.HandleFunc("/send", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			post(w, r)
+			resp := Post("http://localhost:8080/employee")
+			fmt.Fprint(w, resp)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -43,11 +44,11 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func post(w http.ResponseWriter, r *http.Request) {
+func Post(url string) string {
 	resp, err := http.Post(
-		"http://localhost:8080/employee", // target url
-		"application/json",               // content-type
-		createRequestBody())              // request body
+		url,                 // target url
+		"application/json",  // content-type
+		createRequestBody()) // request body
 	if err != nil {
 		panic(err)
 	}
@@ -59,8 +60,9 @@ func post(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 		body := string(b)
-		fmt.Fprint(w, body) // 寫出回應
+		return body
 	}
+	return ""
 }
 
 func createRequestBody() *bytes.Buffer {
