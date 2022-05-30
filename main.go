@@ -35,23 +35,7 @@ func main() {
 	http.HandleFunc("/send", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			resp, err := http.Post(
-				"http://localhost:8080/employee",
-				"application/json",
-				bytes.NewBuffer(genData()))
-			if err != nil {
-				panic(err)
-			}
-			defer resp.Body.Close()
-
-			if resp.StatusCode == http.StatusOK {
-				b, err := io.ReadAll(resp.Body)
-				if err != nil {
-					panic(err)
-				}
-				body := string(b)
-				fmt.Printf("body:%s\n", body)
-			}
+			post(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -59,7 +43,27 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func genData() []byte {
+func post(w http.ResponseWriter, r *http.Request) {
+	resp, err := http.Post(
+		"http://localhost:8080/employee", // target url
+		"application/json",               // content-type
+		createRequestBody())              // request body
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close() // 記得關閉resp.Body
+
+	if resp.StatusCode == http.StatusOK {
+		b, err := io.ReadAll(resp.Body)
+		if err != nil {
+			panic(err)
+		}
+		body := string(b)
+		fmt.Fprint(w, body) // 寫出回應
+	}
+}
+
+func createRequestBody() *bytes.Buffer {
 	emp := Employee{
 		Id:   1,
 		Name: "john",
@@ -70,5 +74,6 @@ func genData() []byte {
 	if err != nil {
 		panic(err)
 	}
-	return data
+
+	return bytes.NewBuffer(data)
 }
