@@ -1,42 +1,24 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"time"
 )
 
-type Employee struct {
-	Id   int
-	Name string
-	Age  int
-}
-
 func main() {
-	http.HandleFunc("/employee", func(rw http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodPost:
-			var emp Employee
-			decoder := json.NewDecoder(r.Body)
-			err := decoder.Decode(&emp)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Println(emp)
-			rw.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(rw).Encode(emp)
-		default:
-			http.Error(rw, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
-
-	http.HandleFunc("/send", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			resp := Post("http://localhost:8080/employee")
-			fmt.Fprint(w, resp)
+			ctx := context.Background()
+			data, err := Get(ctx, "http://localhost:8080/get")
+			if err != nil {
+				fmt.Fprintf(w, "err=%v", err)
+			}
+			fmt.Fprintf(w, data)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -44,38 +26,31 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func Post(url string) string {
-	resp, err := http.Post(
-		url,                 // target url
-		"application/json",  // content-type
-		createRequestBody()) // request body
+func Get(ctx context.Context, url string) (string, error) {
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodGet,
+		url,
+		nil)
 	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close() // 記得關閉resp.Body
-
-	if resp.StatusCode == http.StatusOK {
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			panic(err)
-		}
-		body := string(b)
-		return body
-	}
-	return ""
-}
-
-func createRequestBody() *bytes.Buffer {
-	emp := Employee{
-		Id:   1,
-		Name: "john",
-		Age:  33,
+		log.Printf("create request error, err=%v", err)
+		return "", err
 	}
 
-	data, err := json.Marshal(&emp)
+	client := &http.Client{
+		Timeout: time.Second * 3,
+	}
+	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		log.Printf("client send request error, err=%v", err)
+		return "", err
 	}
+	defer resp.Body.Close()
 
-	return bytes.NewBuffer(data)
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("read request body error, err=%v", err)
+		return "", err
+	}
+	return string(b), nil
 }
