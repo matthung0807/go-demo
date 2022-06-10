@@ -3,10 +3,21 @@
 <head>
 </head>
 <body>
-    <form action="http://localhost:8080/upload" 
-            method="POST" 
-            enctype="multipart/form-data">
-        upload file:<input name="file" type="file"><br>
+    <form action="#" method="POST">
+        name:<input name="name" type="text" value="John"><br>
+        email:<input name="email" type="email" value="john@abc.com"><br>
+        age:<input name="age" type="number" value="33"><br>
+        birthday:<input name="birthday" type="date" value="1989-4-12"><br>
+        gender:
+            <label><input type="radio" name="gender" value="male" checked>male</label>
+            <label><input type="radio" name="gender" value="female">female</label>
+            <label><input type="radio" name="gender" value="others">others</label>
+        <br>
+        languages:
+            <label><input type="checkbox" name="lang" value="en" checked>english</label>
+            <label><input type="checkbox" name="lang" value="ch" checked>mandarin</label>
+            <label><input type="checkbox" name="lang" value="jp" checked>japanese</label>
+        <br>
         <input type="submit">
     </form>
 </body>
