@@ -13,7 +13,7 @@ type Employee struct {
 }
 
 func main() {
-	http.HandleFunc("/employee", func(rw http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/employee", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
 			var emp Employee
@@ -23,10 +23,10 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(emp)
-			rw.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(rw).Encode(emp)
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(emp)
 		default:
-			http.Error(rw, "Method not allowed", http.StatusMethodNotAllowed)
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
 
