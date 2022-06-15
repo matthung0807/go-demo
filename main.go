@@ -5,23 +5,60 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
+	"os"
 )
 
 func main() {
-	http.HandleFunc("/employee", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/send", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+
+			body := new(bytes.Buffer)
+			mw := multipart.NewWriter(body)
+
+			fw, err := mw.CreateFormFile("file", "gopher.jpg")
+			if err != nil {
+				panic(err)
+			}
+
+			f, err := os.Open("./static/image/gopher.jpg")
+			if err != nil {
+				panic(err)
+			}
+			defer f.Close()
+
+			_, err = io.Copy(fw, f)
+			if err != nil {
+				panic(err)
+			}
+			mw.Close()
+
+			req, err := http.NewRequest(http.MethodPost, "http://localhost:8080/upload", body)
+			if err != nil {
+				panic(err)
+			}
+			req.Header.Set("Content-Type", mw.FormDataContentType())
+
+			client := &http.Client{}
+			_, err = client.Do(req)
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Fprint(w, "success")
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	http.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
 			r.ParseMultipartForm(1 << 20) // 1MB
 
-			name := r.Form.Get("name")
-			email := r.Form.Get("email")
-			age := r.Form.Get("age")
-			birthday := r.Form.Get("birthday")
-			gender := r.Form.Get("gender")
-			langs := r.Form["lang"]
-
-			file, header, err := r.FormFile("photo")
+			file, header, err := r.FormFile("file")
 			if err != nil {
 				panic(err)
 			}
@@ -37,10 +74,8 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-
-			fmt.Fprint(w, fmt.Sprintf(
-				"name=%v\nemail=%v\nage=%v\nbirtyday=%v\ngender=%v\nlanguages=%v\nphoto=%v",
-				name, email, age, birthday, gender, langs, filename))
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprintf(w, "%v uploaded", filename)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
