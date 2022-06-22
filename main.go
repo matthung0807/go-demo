@@ -15,10 +15,31 @@ func main() {
 		switch r.Method {
 		case http.MethodGet:
 
-			body := new(bytes.Buffer)
+			body := new(bytes.Buffer) // the body content writed by multipart.Writer
 			mw := multipart.NewWriter(body)
 
-			fw, err := mw.CreateFormFile("file", "gopher.jpg")
+			// wirte field "name"
+			fw, err := mw.CreateFormField("name")
+			if err != nil {
+				panic(err)
+			}
+			_, err = fw.Write([]byte("John"))
+			if err != nil {
+				panic(err)
+			}
+
+			// write field "age"
+			fw, err = mw.CreateFormField("age")
+			if err != nil {
+				panic(err)
+			}
+			_, err = fw.Write([]byte("33"))
+			if err != nil {
+				panic(err)
+			}
+
+			// write file field "file"
+			fw, err = mw.CreateFormFile("file", "gopher.jpg")
 			if err != nil {
 				panic(err)
 			}
@@ -33,7 +54,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			mw.Close()
+			mw.Close() // close multipart.Writer
 
 			req, err := http.NewRequest(http.MethodPost, "http://localhost:8080/upload", body)
 			if err != nil {
@@ -58,6 +79,9 @@ func main() {
 		case http.MethodPost:
 			r.ParseMultipartForm(1 << 20) // 1MB
 
+			name := r.Form.Get("name")
+			age := r.Form.Get("age")
+
 			file, header, err := r.FormFile("file")
 			if err != nil {
 				panic(err)
@@ -74,6 +98,8 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+
+			fmt.Printf("name=%v\nage=%v\nfilename=%v\n", name, age, filename)
 			w.Header().Set("Content-Type", "application/json")
 			fmt.Fprintf(w, "%v uploaded", filename)
 		default:
