@@ -15,9 +15,9 @@ type EmployeeRepoImpl struct {
 
 func (er *EmployeeRepoImpl) FindEmployeesAgeGreaterThan(age int) []model.Employee {
 	m := map[int]model.Employee{
-		1: {Id: 1, Name: "John", Age: 33},
-		2: {Id: 2, Name: "Mary", Age: 21},
-		3: {Id: 3, Name: "Mike", Age: 45},
+		1: {ID: 1, Name: "John", Age: 33},
+		2: {ID: 2, Name: "Mary", Age: 21},
+		3: {ID: 3, Name: "Mike", Age: 45},
 	}
 	emps := []model.Employee{}
 	for _, emp := range m {

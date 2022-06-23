@@ -24,7 +24,7 @@ func TestGetSrEmployeeNumbers_Age40(t *testing.T) {
 	empRepoImplMock := new(EmployeeRepoImplMock)
 	empRepoImplMock.On("FindEmployeesAgeGreaterThan", 40).
 		Return([]model.Employee{
-			{Id: 99, Name: "Jack", Age: 70},
+			{ID: 99, Name: "Jack", Age: 70},
 		})
 
 	expected := 1

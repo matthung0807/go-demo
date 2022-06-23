@@ -14,8 +14,8 @@ func TestFindEmployeesAgeGreaterThan30(t *testing.T) {
 	}{
 		30,
 		[]model.Employee{
-			{Id: 1, Name: "John", Age: 33},
-			{Id: 3, Name: "Mike", Age: 45},
+			{ID: 1, Name: "John", Age: 33},
+			{ID: 3, Name: "Mike", Age: 45},
 		},
 	}
 
