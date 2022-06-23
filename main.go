@@ -1,34 +1,26 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
-type Employee struct {
-	Id   int
-	Name string
-	Age  int
+func main() {
+	http.HandleFunc("/employee", EmployeeHandler)
+	http.ListenAndServe(":8080", nil)
 }
 
-func main() {
-	http.HandleFunc("/employee", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodPost:
-			var emp Employee
-			decoder := json.NewDecoder(r.Body)
-			err := decoder.Decode(&emp)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Println(emp)
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(emp)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+func EmployeeHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPost:
+		b, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			panic(err)
 		}
-	})
-
-	http.ListenAndServe(":8080", nil)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, string(b))
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
 }
