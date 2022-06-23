@@ -29,10 +29,10 @@ func TestGetSrEmployeeNumbers_Age40(t *testing.T) {
 
 	expected := 1
 
-	empService := EmployeeSerivceImpl{
+	es := EmployeeSerivceImpl{
 		EmpRepo: repoMock,
 	}
 
-	actial := empService.GetSrEmployeeNumbers(40)
+	actial := es.GetSrEmployeeNumbers(40)
 	assert.Equal(t, expected, actial)
 }
