@@ -14,15 +14,15 @@ type EmployeeRepoImplMock struct {
 }
 
 // use mock to implments CalculatorService's method
-func (empRepoImplMock *EmployeeRepoImplMock) FindEmployeesAgeGreaterThan(age int) []model.Employee {
-	args := empRepoImplMock.Called(age)
+func (repoMock *EmployeeRepoImplMock) FindEmployeesAgeGreaterThan(age int) []model.Employee {
+	args := repoMock.Called(age)
 	return args.Get(0).([]model.Employee)
 }
 
 func TestGetSrEmployeeNumbers_Age40(t *testing.T) {
 
-	empRepoImplMock := new(EmployeeRepoImplMock)
-	empRepoImplMock.On("FindEmployeesAgeGreaterThan", 40).
+	repoMock := new(EmployeeRepoImplMock)
+	repoMock.On("FindEmployeesAgeGreaterThan", 40).
 		Return([]model.Employee{
 			{ID: 99, Name: "Jack", Age: 70},
 		})
@@ -30,7 +30,7 @@ func TestGetSrEmployeeNumbers_Age40(t *testing.T) {
 	expected := 1
 
 	empService := EmployeeSerivceImpl{
-		EmpRepo: empRepoImplMock,
+		EmpRepo: repoMock,
 	}
 
 	actial := empService.GetSrEmployeeNumbers(40)
