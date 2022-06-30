@@ -16,6 +16,9 @@ func TestEmployeeHandler_Post(t *testing.T) {
 
 	// send testing request and response writer to target handler
 	EmployeeHandler(w, r)
+	if w.Result().StatusCode != http.StatusCreated {
+		t.Errorf("unexpected status code=%d", w.Result().StatusCode)
+	}
 
 	// read response body
 	b, err := io.ReadAll(w.Body)
@@ -46,6 +49,10 @@ func TestEmployeeEndpoint_Post(t *testing.T) {
 	resp, err := client.Do(req)
 	if err != nil {
 		t.Errorf("send request error, err=%v", err)
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		t.Errorf("unexpected status code=%d", resp.StatusCode)
 	}
 
 	// read response body
