@@ -1,16 +1,24 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
 func main() {
-	http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		name := r.URL.Query().Get("name") // get URL query string
-		content := fmt.Sprintf("hello, %s", name)
-		fmt.Fprint(w, content) // write out content
-	})
+	mux := http.NewServeMux()
+	h := HelloHandler(HellohandlerFunc)
+	mux.Handle("/hello", h)
+	// mux.HandleFunc("/hello", HellohandlerFunc)
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", mux)
+}
+
+type HelloHandler func(w http.ResponseWriter, r *http.Request)
+
+func (f HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	f(w, r)
+}
+
+func HellohandlerFunc(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("hello"))
 }
