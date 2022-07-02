@@ -1,24 +1,38 @@
 package main
 
 import (
+	"log"
 	"net/http"
 )
 
+func LoggerHandlerFunc(h http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("%s %s start", r.Method, r.URL.Path)
+		h.ServeHTTP(w, r)
+		log.Printf("%s %s end", r.Method, r.URL.Path)
+	}
+}
+
 func main() {
-	mux := http.NewServeMux()
-	h := HelloHandler(HellohandlerFunc)
-	mux.Handle("/hello", h)
-	// mux.HandleFunc("/hello", HellohandlerFunc)
+	http.HandleFunc("/hello", LoggerHandlerFunc(HellohandlerFunc()))
+	http.HandleFunc("/hi", HiHandlerFunc())
 
-	http.ListenAndServe(":8080", mux)
+	// handler := LoggerHandlerFunc(http.DefaultServeMux)
+	http.ListenAndServe(":8080", nil)
 }
 
-type HelloHandler func(w http.ResponseWriter, r *http.Request)
-
-func (f HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	f(w, r)
+func HellohandlerFunc() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := "hello"
+		log.Printf("data=%s", data)
+		w.Write([]byte(data))
+	}
 }
 
-func HellohandlerFunc(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("hello"))
+func HiHandlerFunc() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := "hi"
+		log.Printf("data=%s", data)
+		w.Write([]byte(data))
+	}
 }
