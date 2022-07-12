@@ -38,15 +38,15 @@ func main() {
 
 	d := l.Delete(2)      // [a,b,d,e,f]
 	fmt.Println(d.Value)  // c
-	fmt.Println(e.Next()) // nil
+	fmt.Println(d.Next()) // nil
 
 	d = l.Delete(0)       // [b,d,e,f]
-	fmt.Println(e.Value)  // a
-	fmt.Println(e.Next()) // nil
+	fmt.Println(d.Value)  // a
+	fmt.Println(d.Next()) // nil
 
 	d = l.Delete(l.Length() - 1) // [b,d,e]
-	fmt.Println(e.Value)         // f
-	fmt.Println(e.Next())        // nil
+	fmt.Println(d.Value)         // f
+	fmt.Println(d.Next())        // nil
 
 	for node := l.First(); node != nil; node = node.Next() {
 		fmt.Print(node.Value) // bde
