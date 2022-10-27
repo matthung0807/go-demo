@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 func main() {
-	fmt.Println("Hello World")
+	fmt.Println(os.Getenv("FOO")) // BAR
+	fmt.Println(os.Getenv("HI"))  // YO
 }
