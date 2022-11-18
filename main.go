@@ -28,7 +28,7 @@ func main() {
 	)
 	failOnError(err, "Failed to declare a queue")
 
-	// 接收訊息
+	// 註冊consumer
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
