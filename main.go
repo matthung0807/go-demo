@@ -10,7 +10,7 @@ import (
 )
 
 type Employee struct {
-	ID        int64     // column name is `id`"
+	ID        int64     // primary key, column name is `id`"
 	Name      string    // column name is `name`"
 	Age       int       // column name is `age`"
 	CreatedAt time.Time // column name is `created_at`"
