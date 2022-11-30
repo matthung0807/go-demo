@@ -6,17 +6,14 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 type Employee struct {
-	ID        int64
-	Name      string
-	Age       int
-	CreatedAt time.Time
-}
-
-func (emp Employee) TableName() string {
-	return "employee" // 設定Employee對應資料表名稱為"employee"
+	ID        int64     // column name is `id`"
+	Name      string    // column name is `name`"
+	Age       int       // column name is `age`"
+	CreatedAt time.Time // column name is `created_at`"
 }
 
 const (
@@ -33,7 +30,11 @@ func getGormDB() *gorm.DB {
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		HOST, PORT, USER, PASSWORD, DATABASE, SSL)
 
-	gormDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	gormDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true, // use singular table name, table for `User` would be `user` with this option enabled
+		},
+	})
 	if err != nil {
 		panic("open gorm db error")
 	}
