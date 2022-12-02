@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql/driver"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -9,11 +11,37 @@ import (
 	"gorm.io/gorm/schema"
 )
 
+// employee.contact要轉換的型態
+type Contact struct {
+	Name  string
+	Phone string
+}
 type Employee struct {
-	ID        int64     // primary key, column name is `id`
-	Name      string    // column name is `name`
-	Age       int       // column name is `age`
-	CreatedAt time.Time // column name is `created_at`
+	ID        int64
+	Name      string
+	Age       int
+	Contact   Contact // mapping to column `employee.contact`
+	CreatedAt time.Time
+}
+
+// column type to field type
+//
+// 讀取時employee.contact(jsonb) -> Employee.Contact
+func (c *Contact) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("Failed to unmarshal JSONB value=%v", value)
+	}
+	err := json.Unmarshal(bytes, c)
+	return err
+}
+
+// field type to column type
+//
+// 插入時Employee.Contact -> employee.contact(jsonb)
+func (c Contact) Value() (driver.Value, error) {
+	json.Marshal(c)
+	return json.Marshal(c)
 }
 
 const (
@@ -45,8 +73,19 @@ func getGormDB() *gorm.DB {
 func main() {
 	db := getGormDB()
 
-	emp := Employee{}
-	db.First(&emp) // SELECT * FROM employee ORDER BY id LIMIT 1;
+	newEmp := Employee{
+		Name: "john",
+		Age:  33,
+		Contact: Contact{
+			Name:  "mary",
+			Phone: "0912345678",
+		},
+	}
 
-	fmt.Println(emp) // {1 john 33 2022-11-29 18:44:54.114161 +0000 UTC}
+	db.Create(&newEmp)
+
+	emp := Employee{}
+	db.Last(&emp)
+
+	fmt.Println(emp) // {5 tony 45 {mary 0912345678} 2022-12-02 16:53:35.170276 +0000 UTC}
 }
