@@ -14,26 +14,34 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
-	http.HandleFunc("/echo", echoHandler)
+	http.HandleFunc("/echo", echoHandler)   // websocket
+	http.HandleFunc("/hello", helloHandler) // http
+
 	http.ListenAndServe(":8080", nil)
 }
 
 func echoHandler(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil) // get a websocket connettion
+	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		panic(err)
 	}
 	defer conn.Close()
 	for {
-		mt, message, err := conn.ReadMessage() // read a amessage from client
+		mt, message, err := conn.ReadMessage()
 		if err != nil {
 			panic(err)
 		}
 
 		fmt.Printf("receive: %s", message)
-		err = conn.WriteMessage(mt, message) // write a message to client
+		err = conn.WriteMessage(mt, message)
 		if err != nil {
 			panic(err)
 		}
 	}
+}
+
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("name")
+	content := fmt.Sprintf("hello, %s", name)
+	fmt.Fprint(w, content)
 }
