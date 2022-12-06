@@ -19,13 +19,13 @@ func main() {
 
 	// 註冊consumer
 	msgs, err := ch.Consume(
-		"hello", // queue
-		"",      // consumer
-		true,    // auto-ack
-		false,   // exclusive
-		false,   // no-local
-		false,   // no-wait
-		nil,     // args
+		"hello",          // queue name
+		"hello-consumer", // consumer
+		true,             // auto-ack
+		false,            // exclusive
+		false,            // no-local
+		false,            // no-wait
+		nil,              // args
 	)
 	failOnError(err, "Failed to register a consumer")
 
