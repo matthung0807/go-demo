@@ -19,21 +19,22 @@ func main() {
 }
 
 func echoHandler(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil) // get a websocket connettion
+	conn, err := upgrader.Upgrade(w, r, nil) // get a websocket connection
 	if err != nil {
 		panic(err)
 	}
 	defer conn.Close()
 	for {
-		mt, message, err := conn.ReadMessage() // read a amessage from client
+		mt, message, err := conn.ReadMessage() // read messages from client
 		if err != nil {
 			panic(err)
 		}
 
 		fmt.Printf("receive: %s", message)
-		err = conn.WriteMessage(mt, message) // write a message to client
+		err = conn.WriteMessage(mt, message) // write messages to client
 		if err != nil {
 			panic(err)
 		}
 	}
+
 }
