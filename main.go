@@ -30,7 +30,7 @@ func echoHandler(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		fmt.Printf("receive: %s", message)
+		fmt.Printf("receive: %s\n", message)
 		err = conn.WriteMessage(mt, message) // write messages to client
 		if err != nil {
 			panic(err)
