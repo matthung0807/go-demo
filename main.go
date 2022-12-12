@@ -46,16 +46,16 @@ func notificationHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	socketConn, err := upgrader.Upgrade(w, r, nil) // get a websocket connection
+	wsConn, err := upgrader.Upgrade(w, r, nil) // get a websocket connection
 	if err != nil {
 		panic(err)
 	}
-	defer socketConn.Close()
+	defer wsConn.Close()
 	for {
 		var forever chan struct{}
 		messageHandler := func(bytes []byte) {
 			fmt.Printf("push message=\"%s\"\n", bytes)
-			err = socketConn.WriteMessage(websocket.TextMessage, bytes) // write a message to client
+			err = wsConn.WriteMessage(websocket.TextMessage, bytes) // write a message to client
 			if err != nil {
 				panic(err)
 			}
