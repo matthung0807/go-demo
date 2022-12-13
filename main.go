@@ -53,12 +53,13 @@ func notificationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer wsConn.Close()
 	for {
-		messageHandler := func(bytes []byte) {
+		messageHandler := func(bytes []byte) error {
 			fmt.Printf("push message=\"%s\"\n", bytes)
 			err = wsConn.WriteMessage(websocket.TextMessage, bytes) // write a message to client
 			if err != nil {
-				panic(err)
+				return err
 			}
+			return nil
 		}
 		var forever chan struct{}
 		receive(msgs, messageHandler) // pass consumed message to messageHandler
@@ -66,7 +67,7 @@ func notificationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type MessageHandler func(bytes []byte)
+type MessageHandler func(bytes []byte) error
 
 func receive(msgs <-chan amqp.Delivery, handler MessageHandler) {
 	go func() {
