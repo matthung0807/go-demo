@@ -15,6 +15,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
+
 	http.HandleFunc("/notification", notificationHandler)
 	http.ListenAndServe(":8080", nil)
 }
@@ -52,7 +53,6 @@ func notificationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer wsConn.Close()
 	for {
-		var forever chan struct{}
 		messageHandler := func(bytes []byte) {
 			fmt.Printf("push message=\"%s\"\n", bytes)
 			err = wsConn.WriteMessage(websocket.TextMessage, bytes) // write a message to client
@@ -60,6 +60,7 @@ func notificationHandler(w http.ResponseWriter, r *http.Request) {
 				panic(err)
 			}
 		}
+		var forever chan struct{}
 		receive(msgs, messageHandler) // pass consumed message to messageHandler
 		<-forever
 	}
