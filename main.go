@@ -52,15 +52,16 @@ func notificationHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	defer wsConn.Close()
-	for {
-		messageHandler := func(bytes []byte) error {
-			fmt.Printf("push message=\"%s\"\n", bytes)
-			err = wsConn.WriteMessage(websocket.TextMessage, bytes) // write a message to client
-			if err != nil {
-				return err
-			}
-			return nil
+
+	messageHandler := func(bytes []byte) error {
+		fmt.Printf("push message=\"%s\"\n", bytes)
+		err = wsConn.WriteMessage(websocket.TextMessage, bytes) // write a message to client
+		if err != nil {
+			return err
 		}
+		return nil
+	}
+	for {
 		var forever chan struct{}
 		receive(msgs, messageHandler) // pass consumed message to messageHandler
 		<-forever
