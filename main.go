@@ -6,15 +6,7 @@ import (
 	"abc.com/demo/handler"
 	"abc.com/demo/mq"
 	"abc.com/demo/ws"
-
-	"github.com/gorilla/websocket"
 )
-
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true // diable CORS check
-	},
-}
 
 func main() {
 	notifier := ws.NewWebSocketManager()
