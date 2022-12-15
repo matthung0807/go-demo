@@ -3,7 +3,6 @@ package handler
 import (
 	"log"
 	"net/http"
-	"time"
 
 	"abc.com/demo/mq"
 	"abc.com/demo/ws"
@@ -35,15 +34,11 @@ func (h *NotificationHandler) Handle() http.HandlerFunc {
 		h.notifier.Register(userId, wsConn)
 		defer h.notifier.Unregister(userId)
 
-		ticker := time.NewTicker(time.Second * 5)
-		for {
-			<-ticker.C
-			_, _, err = wsConn.ReadMessage()
-			if err != nil {
-				log.Printf("read message from websocket client error, err=%v", err)
-				break
-			}
+		_, _, err = wsConn.ReadMessage() // block until get message from client
+		if err != nil {
+			log.Printf("read message from websocket client error, err=%v", err)
 		}
+
 	}
 }
 
