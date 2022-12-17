@@ -16,25 +16,25 @@ type Notifier interface {
 	Notify(userId, message string) error
 }
 
-type WebSocketManger struct {
+type WebSocketManager struct {
 	connMap map[string]*websocket.Conn
 	rwmu    sync.RWMutex
 }
 
-func NewWebSocketManager() WebSocketManger {
-	return WebSocketManger{
+func NewWebSocketManager() WebSocketManager {
+	return WebSocketManager{
 		connMap: make(map[string]*websocket.Conn),
 	}
 }
 
-func (wm *WebSocketManger) Register(userId string, conn *websocket.Conn) {
+func (wm *WebSocketManager) Register(userId string, conn *websocket.Conn) {
 	wm.rwmu.Lock()
 	defer wm.rwmu.Unlock()
 	wm.connMap[userId] = conn
 	log.Printf("userId=[%s] websocket connection registered", userId)
 }
 
-func (wm *WebSocketManger) Unregister(userId string) error {
+func (wm *WebSocketManager) Unregister(userId string) error {
 	wm.rwmu.Lock()
 	defer wm.rwmu.Unlock()
 	conn, ok := wm.connMap[userId]
@@ -47,7 +47,7 @@ func (wm *WebSocketManger) Unregister(userId string) error {
 	return conn.Close()
 }
 
-func (wm *WebSocketManger) GetConn(userId string) *websocket.Conn {
+func (wm *WebSocketManager) GetConn(userId string) *websocket.Conn {
 	wm.rwmu.RLock()
 	defer wm.rwmu.RUnlock()
 
@@ -58,7 +58,7 @@ func (wm *WebSocketManger) GetConn(userId string) *websocket.Conn {
 	return conn
 }
 
-func (wm *WebSocketManger) Notify(userId, message string) error {
+func (wm *WebSocketManager) Notify(userId, message string) error {
 	conn := wm.GetConn(userId)
 	if conn == nil {
 		return fmt.Errorf("userId=[%s]'s websocket connection not found", userId)
