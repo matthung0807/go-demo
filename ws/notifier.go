@@ -41,7 +41,8 @@ func (wm *WebSocketManger) Unregister(userId string) error {
 	if !ok {
 		return errors.New("unregister connection failed")
 	}
-	wm.connMap[userId] = nil
+
+	delete(wm.connMap, userId)
 	log.Printf("userId=[%s] websocket connection unregistered then closed", userId)
 	return conn.Close()
 }
