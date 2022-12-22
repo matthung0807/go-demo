@@ -45,14 +45,11 @@ func getGormDB() *gorm.DB {
 func main() {
 	db := getGormDB()
 
+	db.Model(&Employee{}).Where("name = ?", "john").Update("age", 33) // UPDATE employee SET age = 33 WHERE name = 'john';
+
 	emp := Employee{
-		ID: 1, // primary key
+		ID: 1,
 	}
-
-	result := db.Model(&emp).Update("age", "34") // UPDATE employee SET age = 34 WHERE id = 1;
-	fmt.Println(result.Error)                    // nil
-	fmt.Println(result.RowsAffected)             // 1
-
 	db.First(&emp)   // SELECT * FROM employee WHERE id = 1;
-	fmt.Println(emp) // {1 john 34 2022-12-22 21:56:37.061419 +0000 UTC}
+	fmt.Println(emp) // {1 john 33 2022-12-22 21:56:37.061419 +0000 UTC}
 }
