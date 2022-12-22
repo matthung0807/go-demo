@@ -1,2 +1,2 @@
 # go-demo
-[Golang GORM PostgreSQL基本設定](https://matthung0807.blogspot.com/2022/11/go-gorm-postgresql-basic.html)
+[Golang GORM 修改資料 update data](https://matthung0807.blogspot.com/2022/12/go-gorm-update-data.html)

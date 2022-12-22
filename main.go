@@ -45,8 +45,14 @@ func getGormDB() *gorm.DB {
 func main() {
 	db := getGormDB()
 
-	emp := Employee{}
-	db.First(&emp) // SELECT * FROM employee ORDER BY id LIMIT 1;
+	emp := Employee{
+		ID: 1, // primary key
+	}
 
-	fmt.Println(emp) // {1 john 33 2022-11-29 18:44:54.114161 +0000 UTC}
+	result := db.Model(&emp).Update("age", "34") // UPDATE employee SET age = 34 WHERE id = 1;
+	fmt.Println(result.Error)                    // nil
+	fmt.Println(result.RowsAffected)             // 1
+
+	db.First(&emp, 1) // SELECT * FROM employee WHERE id = 1;
+	fmt.Println(emp)  // {1 john 34 2022-12-22 21:56:37.061419 +0000 UTC}
 }
