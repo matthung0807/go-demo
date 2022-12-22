@@ -51,7 +51,7 @@ func main() {
 		CreatedAt: time.Now(),
 	}
 
-	result := db.Create(&emp) // insert
+	result := db.Create(&emp) // INSERT INTO employee (name, age, created_at) VALUES ("tony", 45, "2022-12-22 22:05:09.83327")
 
 	fmt.Println(emp.ID)              // 3
 	fmt.Println(result.Error)        // nil
