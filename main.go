@@ -53,6 +53,6 @@ func main() {
 	fmt.Println(result.Error)                    // nil
 	fmt.Println(result.RowsAffected)             // 1
 
-	db.First(&emp, 1) // SELECT * FROM employee WHERE id = 1;
-	fmt.Println(emp)  // {1 john 34 2022-12-22 21:56:37.061419 +0000 UTC}
+	db.First(&emp)   // SELECT * FROM employee WHERE id = 1;
+	fmt.Println(emp) // {1 john 34 2022-12-22 21:56:37.061419 +0000 UTC}
 }
