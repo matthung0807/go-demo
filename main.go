@@ -10,10 +10,11 @@ import (
 )
 
 type Employee struct {
-	ID        int64     // primary key, column name is `id`
-	Name      string    // column name is `name`
-	Age       int       // column name is `age`
-	CreatedAt time.Time // column name is `created_at`
+	ID           int64     // primary key, column name is `id`
+	DepartmentID int64     // column name is `department_id`
+	Name         string    // column name is `name`
+	Age          int       // column name is `age`
+	CreatedAt    time.Time // column name is `created_at`
 }
 
 const (
@@ -45,8 +46,17 @@ func getGormDB() *gorm.DB {
 func main() {
 	db := getGormDB()
 
-	emp := Employee{}
-	db.First(&emp) // SELECT * FROM employee ORDER BY id LIMIT 1;
-
-	fmt.Println(emp) // {1 john 33 2022-11-29 18:44:54.114161 +0000 UTC}
+	emps := []Employee{}
+	db.Debug().Model(&Employee{}).
+		Select("employee.id, employee.department_id, employee.name, employee.age, employee.created_at").
+		Joins("inner join department on department.id = employee.department_id").
+		Scan(&emps)
+		/*
+			SELECT id, department_id, name, age, created_at
+			FROM employee
+			LEFT JOIN department ON department_id = employee.department_id
+		*/
+	for _, emp := range emps {
+		fmt.Println(emp)
+	}
 }
