@@ -20,7 +20,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(val)
+	fmt.Println(val) // John
 }
 
 func NewRedisClient() *redis.Client {
