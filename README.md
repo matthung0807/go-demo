@@ -1,2 +1,2 @@
 # go-demo
-[Golang 網頁爬蟲範例](https://matthung0807.blogspot.com/2023/01/go-colly-web-scraper.html)
+[Golang 抓取PTT Beauty板網頁資料](https://matthung0807.blogspot.com/2023/01/go-scrape-ptt-web-beauty.html)

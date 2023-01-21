@@ -9,10 +9,16 @@ import (
 func main() {
 	c := colly.NewCollector()
 
-	c.OnHTML("h1.title", func(e *colly.HTMLElement) {
-		s := e.Text // the text of &lt;h1 class="title"/&gt;
-		fmt.Println(s)
+	c.Post("https://www.ptt.cc/ask/over18", map[string]string{
+		"from": "/bbs/Beauty/index.html",
+		"yes":  "yes",
 	})
 
-	c.Visit("https://matthung0807.blogspot.com/")
+	c.OnHTML("div.title", func(e *colly.HTMLElement) {
+		e.ForEach("a", func(i int, a *colly.HTMLElement) {
+			fmt.Println(a.Text)
+		})
+	})
+
+	c.Visit("https://www.ptt.cc/bbs/Beauty/index.html")
 }
