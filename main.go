@@ -7,9 +7,9 @@ import (
 
 func main() {
 	http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		name := r.URL.Query().Get("name") // get URL query string
+		name := r.URL.Query().Get("name")
 		content := fmt.Sprintf("hello, %s", name)
-		fmt.Fprint(w, content) // write out content
+		fmt.Fprint(w, content)
 	})
 
 	http.ListenAndServe(":8080", nil)
