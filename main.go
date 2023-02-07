@@ -22,8 +22,14 @@ func main() {
 		panic(err)
 	}
 
-	connectionName := output.Connections[0].ConnectionName
-	fmt.Println(*connectionName) // demo-connection-001
+	connection := output.Connections[0]
+	fmt.Println(*connection.ConnectionName)     // demo-connection-001
+	fmt.Println(*connection.Bandwidth)          // 1Gbps
+	fmt.Println(connection.ConnectionState)     // down
+	fmt.Println(*connection.Location)           // CHT51
+	fmt.Println(*connection.AwsLogicalDeviceId) // CHT51-2l5nybymui838
+	fmt.Println(*connection.ProviderName)       // Chunghwa Telecom
+	fmt.Println(connection.LoaIssueTime)        // nil
 }
 
 func NewDirectConnectClient(ctx context.Context) *directconnect.Client {
