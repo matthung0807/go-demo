@@ -13,17 +13,18 @@ func main() {
 	client := NewDirectConnectClient(ctx)
 
 	connectionId := "dxcon-fg5kq63s"
-	params := &directconnect.DescribeConnectionsInput{
-		ConnectionId: &connectionId,
+	connectionName := "connection-001"
+	params := &directconnect.UpdateConnectionInput{
+		ConnectionId:   &connectionId,
+		ConnectionName: &connectionName,
 	}
 
-	output, err := client.DescribeConnections(ctx, params)
+	output, err := client.UpdateConnection(ctx, params)
 	if err != nil {
 		panic(err)
 	}
-
-	connectionName := output.Connections[0].ConnectionName
-	fmt.Println(*connectionName) // demo-connection-001
+	fmt.Println(*output.ConnectionId)   // dxcon-fg5kq63
+	fmt.Println(*output.ConnectionName) // connection-001
 }
 
 func NewDirectConnectClient(ctx context.Context) *directconnect.Client {
