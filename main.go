@@ -12,24 +12,22 @@ func main() {
 	ctx := context.TODO()
 	client := NewDirectConnectClient(ctx)
 
-	connectionId := "dxcon-fg5kq63s"
-	params := &directconnect.DescribeConnectionsInput{
-		ConnectionId: &connectionId,
+	directConnectGatewayName := "demo-directconnect-gateway-001"
+	amazonSideAsn := int64(64512)
+	params := &directconnect.CreateDirectConnectGatewayInput{
+		DirectConnectGatewayName: &directConnectGatewayName,
+		AmazonSideAsn:            &amazonSideAsn,
 	}
 
-	output, err := client.DescribeConnections(ctx, params)
+	output, err := client.CreateDirectConnectGateway(ctx, params)
 	if err != nil {
 		panic(err)
 	}
 
-	connection := output.Connections[0]
-	fmt.Println(*connection.ConnectionName)     // demo-connection-001
-	fmt.Println(*connection.Bandwidth)          // 1Gbps
-	fmt.Println(connection.ConnectionState)     // down
-	fmt.Println(*connection.Location)           // CHT51
-	fmt.Println(*connection.AwsLogicalDeviceId) // CHT51-2l5nybymui838
-	fmt.Println(*connection.ProviderName)       // Chunghwa Telecom
-	fmt.Println(connection.LoaIssueTime)        // nil
+	dcg := output.DirectConnectGateway
+
+	fmt.Println(*dcg.DirectConnectGatewayId)   // e44e0dfb-82b9-4e4f-bcc1-9d196f25d0af
+	fmt.Println(dcg.DirectConnectGatewayState) // available
 }
 
 func NewDirectConnectClient(ctx context.Context) *directconnect.Client {
