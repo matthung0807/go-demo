@@ -12,22 +12,18 @@ func main() {
 	ctx := context.TODO()
 	client := NewDirectConnectClient(ctx)
 
-	connectionName := "demo-connection-001"
-	location := "CHT51" // Chunghwa Telecom, Taipei, TWN
-	bandWidth := "1Gbps"
-	providerName := "Chunghwa Telecom"
-	params := &directconnect.CreateConnectionInput{
-		ConnectionName: &connectionName,
-		Location:       &location,
-		Bandwidth:      &bandWidth,
-		ProviderName:   &providerName,
+	connectionId := "dxcon-fg5kq63s"
+	params := &directconnect.DescribeConnectionsInput{
+		ConnectionId: &connectionId,
 	}
-	output, err := client.CreateConnection(ctx, params)
+
+	output, err := client.DescribeConnections(ctx, params)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(*output.ConnectionId) // dxcon-fg5kq63s
+	connectionName := output.Connections[0].ConnectionName
+	fmt.Println(*connectionName) // demo-connection-001
 }
 
 func NewDirectConnectClient(ctx context.Context) *directconnect.Client {
