@@ -13,13 +13,11 @@ func main() {
 	client := NewEC2Client(ctx)
 
 	vpnGatewayId := "vgw-0670c529abefaee33"
-	vpnId := "vpc-0e6e56e06a48ef314"
-	params := &ec2.DetachVpnGatewayInput{
+	params := &ec2.DeleteVpnGatewayInput{
 		VpnGatewayId: &vpnGatewayId,
-		VpcId:        &vpnId,
 	}
 
-	_, err := client.DetachVpnGateway(ctx, params)
+	_, err := client.DeleteVpnGateway(ctx, params)
 	if err != nil {
 		panic(err)
 	}
