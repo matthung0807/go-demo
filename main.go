@@ -13,19 +13,17 @@ func main() {
 	ctx := context.TODO()
 	client := NewEC2Client(ctx)
 
-	vpcId := "vpc-0e6e56e06a48ef314"
 	vpnGatewayId := "vgw-0670c529abefaee33"
-	params := &ec2.AttachVpnGatewayInput{
-		VpcId:        &vpcId,
-		VpnGatewayId: &vpnGatewayId,
+	params := &ec2.DescribeVpnGatewaysInput{
+		VpnGatewayIds: []string{vpnGatewayId},
 	}
-	output, err := client.AttachVpnGateway(ctx, params)
+
+	output, err := client.DescribeVpnGateways(ctx, params)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(*output.VpcAttachment.VpcId) // vpc-0e6e56e06a48ef314
-	fmt.Println(output.VpcAttachment.State)  // attaching
+	fmt.Println(*output.VpnGateways[0].VpcAttachments[0].VpcId) // vpc-0e6e56e06a48ef314
 }
 
 func NewEC2Client(ctx context.Context) *ec2.Client {
