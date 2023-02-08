@@ -12,23 +12,23 @@ func main() {
 	ctx := context.TODO()
 	client := NewDirectConnectClient(ctx)
 
-	directConnectGatewayId := "e44e0dfb-82b9-4e4f-bcc1-9d196f25d0af"
-	virtualGatewayId := "vgw-0670c529abefaee33"
-	params := &directconnect.DescribeDirectConnectGatewayAssociationsInput{
-		DirectConnectGatewayId: &directConnectGatewayId,
-		VirtualGatewayId:       &virtualGatewayId,
+	// directConnectGatewayId := "e44e0dfb-82b9-4e4f-bcc1-9d196f25d0af"
+	// virtualGatewayId := "vgw-0670c529abefaee33"
+	associationId := "047dd041-3388-4907-a1df-f61de4644c0b"
+	params := &directconnect.DeleteDirectConnectGatewayAssociationInput{
+		// DirectConnectGatewayId: &directConnectGatewayId,
+		// VirtualGatewayId:       &virtualGatewayId,
+		AssociationId: &associationId,
 	}
 
-	output, err := client.DescribeDirectConnectGatewayAssociations(ctx, params)
+	output, err := client.DeleteDirectConnectGatewayAssociation(ctx, params)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(*output.DirectConnectGatewayAssociations[0].AssociationId)   // 047dd041-3388-4907-a1df-f61de4644c0b
-	fmt.Println(output.DirectConnectGatewayAssociations[0].AssociationState) // associated
-	for _, prefix := range output.DirectConnectGatewayAssociations[0].AllowedPrefixesToDirectConnectGateway {
-		fmt.Println(*prefix.Cidr)
-	}
+	fmt.Println(*output.DirectConnectGatewayAssociation.DirectConnectGatewayId) // e44e0dfb-82b9-4e4f-bcc1-9d196f25d0af
+	fmt.Println(*output.DirectConnectGatewayAssociation.VirtualGatewayId)       // vgw-0670c529abefaee33
+	fmt.Println(output.DirectConnectGatewayAssociation.AssociationState)        // disassociating
 }
 
 func NewDirectConnectClient(ctx context.Context) *directconnect.Client {
