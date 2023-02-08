@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 
@@ -14,16 +13,16 @@ func main() {
 	client := NewEC2Client(ctx)
 
 	vpnGatewayId := "vgw-0670c529abefaee33"
-	params := &ec2.DescribeVpnGatewaysInput{
-		VpnGatewayIds: []string{vpnGatewayId},
+	vpnId := "vpc-0e6e56e06a48ef314"
+	params := &ec2.DetachVpnGatewayInput{
+		VpnGatewayId: &vpnGatewayId,
+		VpcId:        &vpnId,
 	}
 
-	output, err := client.DescribeVpnGateways(ctx, params)
+	_, err := client.DetachVpnGateway(ctx, params)
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println(*output.VpnGateways[0].VpcAttachments[0].VpcId) // vpc-0e6e56e06a48ef314
 }
 
 func NewEC2Client(ctx context.Context) *ec2.Client {
