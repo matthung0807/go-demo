@@ -13,23 +13,16 @@ func main() {
 	client := NewDirectConnectClient(ctx)
 
 	connectionId := "dxcon-fg5kq63s"
-	params := &directconnect.DescribeConnectionsInput{
+	params := &directconnect.DeleteConnectionInput{
 		ConnectionId: &connectionId,
 	}
 
-	output, err := client.DescribeConnections(ctx, params)
+	output, err := client.DeleteConnection(ctx, params)
 	if err != nil {
 		panic(err)
 	}
 
-	connection := output.Connections[0]
-	fmt.Println(*connection.ConnectionName)     // demo-connection-001
-	fmt.Println(*connection.Bandwidth)          // 1Gbps
-	fmt.Println(connection.ConnectionState)     // down
-	fmt.Println(*connection.Location)           // CHT51
-	fmt.Println(*connection.AwsLogicalDeviceId) // CHT51-2l5nybymui838
-	fmt.Println(*connection.ProviderName)       // Chunghwa Telecom
-	fmt.Println(connection.LoaIssueTime)        // nil
+	fmt.Println(output.ConnectionState) // deleted
 }
 
 func NewDirectConnectClient(ctx context.Context) *directconnect.Client {
