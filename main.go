@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	compute "google.golang.org/api/compute/v1"
 )
@@ -13,21 +12,20 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	routersService := compute.NewRoutersService(service)
 
-	projectId := "allen-test-312507"
+	projectId := "project-id-1"
 	region := "asia-east1"
-	routerName := "demo-cloudrouter-002"
-	call := routersService.Get(projectId, region, routerName)
-	router, err := call.Do()
+
+	interconnectAttachmentService := compute.NewInterconnectAttachmentsService(service)
+	vlanAttachement := &compute.InterconnectAttachment{
+		Name:                   "demo-vlan-b-002",
+		EdgeAvailabilityDomain: "AVAILABILITY_DOMAIN_1",
+		Router:                 "https://www.googleapis.com/compute/v1/projects/project-id-1/regions/asia-east1/routers/demo-cloudrouter-002",
+		// Interconnect:           "", // service provider's interconnect url
+	}
+	call := interconnectAttachmentService.Insert(projectId, region, vlanAttachement)
+	_, err = call.Do()
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println(router.Name)              // demo-cloudrouter-002
-	fmt.Println(router.Kind)              // compute#router
-	fmt.Println(router.Bgp.Asn)           // 16550
-	fmt.Println(router.Bgp.AdvertiseMode) // DEFAULT
-	fmt.Println(router.Network)           // https://www.googleapis.com/compute/v1/projects/project-id-1/global/networks/demo-vpc-001
-	fmt.Println(router.SelfLink)          // https://www.googleapis.com/compute/v1/projects/project-id-1/regions/asia-east1/routers/demo-cloudrouter-002
 }
