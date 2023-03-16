@@ -21,7 +21,7 @@ func main() {
 		Name:                   "demo-vlan-b-002",
 		EdgeAvailabilityDomain: "AVAILABILITY_DOMAIN_1",
 		Router:                 "https://www.googleapis.com/compute/v1/projects/project-id-1/regions/asia-east1/routers/demo-cloudrouter-002",
-		// Interconnect:           "", // service provider's interconnect url
+		Type:                   "PARTNER",
 	}
 	call := interconnectAttachmentService.Insert(projectId, region, vlanAttachement)
 	_, err = call.Do()
