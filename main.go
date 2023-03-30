@@ -14,14 +14,12 @@ func main() {
 	client := NewEC2Client(ctx)
 
 	key := "Name"
-	value := "demo-vpc-002"
+	value := "demo-internet-gateway-002"
 
-	cidrBlock := "10.1.0.0/24"
-	input := &ec2.CreateVpcInput{
-		CidrBlock: &cidrBlock,
+	createInternetGatewayInput := &ec2.CreateInternetGatewayInput{
 		TagSpecifications: []types.TagSpecification{
 			{
-				ResourceType: types.ResourceTypeVpc,
+				ResourceType: types.ResourceTypeInternetGateway,
 				Tags: []types.Tag{
 					{
 						Key:   &key,
@@ -31,12 +29,26 @@ func main() {
 			},
 		},
 	}
-	output, err := client.CreateVpc(ctx, input)
+
+	createInternetGatewayOutput, err := client.CreateInternetGateway(ctx, createInternetGatewayInput)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(*output.Vpc.VpcId)     // vpc-019a7b633eda5caae
-	fmt.Println(*output.Vpc.CidrBlock) // 10.1.0.0/24
+
+	internetGatewayId := *createInternetGatewayOutput.InternetGateway.InternetGatewayId
+	fmt.Println(internetGatewayId) // igw-0f611889b41740e85
+
+	vpcId := "vpc-019a7b633eda5caae"
+	attachInternetGatewayInput := &ec2.AttachInternetGatewayInput{
+		InternetGatewayId: &internetGatewayId,
+		VpcId:             &vpcId,
+	}
+
+	_, err = client.AttachInternetGateway(ctx, attachInternetGatewayInput)
+	if err != nil {
+		panic(err)
+	}
+
 }
 
 func NewEC2Client(ctx context.Context) *ec2.Client {
