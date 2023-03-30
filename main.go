@@ -13,15 +13,15 @@ func main() {
 	ctx := context.TODO()
 	client := NewEC2Client(ctx)
 
+	vpcId := "vpc-019a7b633eda5caae"
 	key := "Name"
-	value := "demo-vpc-002"
+	value := "demo-route-table-002"
 
-	cidrBlock := "10.1.0.0/24"
-	input := &ec2.CreateVpcInput{
-		CidrBlock: &cidrBlock,
+	input := &ec2.CreateRouteTableInput{
+		VpcId: &vpcId,
 		TagSpecifications: []types.TagSpecification{
 			{
-				ResourceType: types.ResourceTypeVpc,
+				ResourceType: types.ResourceTypeRouteTable,
 				Tags: []types.Tag{
 					{
 						Key:   &key,
@@ -31,12 +31,17 @@ func main() {
 			},
 		},
 	}
-	output, err := client.CreateVpc(ctx, input)
+
+	output, err := client.CreateRouteTable(ctx, input)
+
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(*output.Vpc.VpcId)     // vpc-019a7b633eda5caae
-	fmt.Println(*output.Vpc.CidrBlock) // 10.1.0.0/24
+	fmt.Println(*output.RouteTable.VpcId)        // vpc-019a7b633eda5caae
+	fmt.Println(*output.RouteTable.RouteTableId) // rtb-0b0e21c8e3b1cda13
+	if len(output.RouteTable.Routes) > 0 {
+		fmt.Println(*output.RouteTable.Routes[0].DestinationCidrBlock) // 10.1.0.0/24
+	}
 }
 
 func NewEC2Client(ctx context.Context) *ec2.Client {
