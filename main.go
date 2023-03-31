@@ -14,14 +14,18 @@ func main() {
 	client := NewEC2Client(ctx)
 
 	key := "Name"
-	value := "demo-vpc-002"
+	value := "demo-subnet-003"
+	az := "ap-northeast-1a"
 
-	cidrBlock := "10.1.0.0/24"
-	input := &ec2.CreateVpcInput{
-		CidrBlock: &cidrBlock,
+	cidrBlock := "10.1.0.0/25"
+	vpcId := "vpc-019a7b633eda5caae"
+	input := &ec2.CreateSubnetInput{
+		VpcId:            &vpcId,
+		AvailabilityZone: &az,
+		CidrBlock:        &cidrBlock,
 		TagSpecifications: []types.TagSpecification{
 			{
-				ResourceType: types.ResourceTypeVpc,
+				ResourceType: types.ResourceTypeSubnet,
 				Tags: []types.Tag{
 					{
 						Key:   &key,
@@ -31,12 +35,15 @@ func main() {
 			},
 		},
 	}
-	output, err := client.CreateVpc(ctx, input)
+
+	output, err := client.CreateSubnet(ctx, input)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(*output.Vpc.VpcId)     // vpc-019a7b633eda5caae
-	fmt.Println(*output.Vpc.CidrBlock) // 10.1.0.0/24
+
+	fmt.Println(*output.Subnet.SubnetId)                // subnet-05c7f25587be4dc58
+	fmt.Println(*output.Subnet.VpcId)                   // vpc-019a7b633eda5caae
+	fmt.Println(*output.Subnet.AvailableIpAddressCount) // 123
 }
 
 func NewEC2Client(ctx context.Context) *ec2.Client {
