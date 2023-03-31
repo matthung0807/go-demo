@@ -2,46 +2,31 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 )
 
 func main() {
 	ctx := context.TODO()
 	client := NewEC2Client(ctx)
 
-	vpcId := "vpc-019a7b633eda5caae"
-	key := "Name"
-	value := "demo-route-table-002"
+	routeTableId := "rtb-0b0e21c8e3b1cda13"
+	cidrBlock := "0.0.0.0/0"
+	internetGatewayId := "igw-0f611889b41740e85"
 
-	input := &ec2.CreateRouteTableInput{
-		VpcId: &vpcId,
-		TagSpecifications: []types.TagSpecification{
-			{
-				ResourceType: types.ResourceTypeRouteTable,
-				Tags: []types.Tag{
-					{
-						Key:   &key,
-						Value: &value,
-					},
-				},
-			},
-		},
+	input := &ec2.CreateRouteInput{
+		RouteTableId:         &routeTableId,
+		DestinationCidrBlock: &cidrBlock,
+		GatewayId:            &internetGatewayId,
 	}
 
-	output, err := client.CreateRouteTable(ctx, input)
+	_, err := client.CreateRoute(ctx, input)
 
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(*output.RouteTable.VpcId)        // vpc-019a7b633eda5caae
-	fmt.Println(*output.RouteTable.RouteTableId) // rtb-0b0e21c8e3b1cda13
-	if len(output.RouteTable.Routes) > 0 {
-		fmt.Println(*output.RouteTable.Routes[0].DestinationCidrBlock) // 10.1.0.0/24
-	}
+
 }
 
 func NewEC2Client(ctx context.Context) *ec2.Client {
