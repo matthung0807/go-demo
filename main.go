@@ -6,44 +6,26 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 )
 
 func main() {
 	ctx := context.TODO()
 	client := NewEC2Client(ctx)
 
-	key := "Name"
-	value := "demo-subnet-003"
-	az := "ap-northeast-1a"
+	routeTableId := "rtb-0b0e21c8e3b1cda13"
+	subnetId := "subnet-05c7f25587be4dc58"
 
-	cidrBlock := "10.1.0.0/25"
-	vpcId := "vpc-019a7b633eda5caae"
-	input := &ec2.CreateSubnetInput{
-		VpcId:            &vpcId,
-		AvailabilityZone: &az,
-		CidrBlock:        &cidrBlock,
-		TagSpecifications: []types.TagSpecification{
-			{
-				ResourceType: types.ResourceTypeSubnet,
-				Tags: []types.Tag{
-					{
-						Key:   &key,
-						Value: &value,
-					},
-				},
-			},
-		},
+	input := &ec2.AssociateRouteTableInput{
+		RouteTableId: &routeTableId,
+		SubnetId:     &subnetId,
 	}
 
-	output, err := client.CreateSubnet(ctx, input)
+	output, err := client.AssociateRouteTable(ctx, input)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(*output.Subnet.SubnetId)                // subnet-05c7f25587be4dc58
-	fmt.Println(*output.Subnet.VpcId)                   // vpc-019a7b633eda5caae
-	fmt.Println(*output.Subnet.AvailableIpAddressCount) // 123
+	fmt.Println(*output.AssociationId) // rtbassoc-0d2dbf31192e46e91
 }
 
 func NewEC2Client(ctx context.Context) *ec2.Client {
