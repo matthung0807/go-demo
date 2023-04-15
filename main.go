@@ -13,20 +13,17 @@ func main() {
 
 	routeTableId := "rtb-0b0e21c8e3b1cda13"
 	cidrBlock := "0.0.0.0/0"
-	internetGatewayId := "igw-0f611889b41740e85"
 
-	input := &ec2.CreateRouteInput{
+	input := &ec2.DeleteRouteInput{
 		RouteTableId:         &routeTableId,
 		DestinationCidrBlock: &cidrBlock,
-		GatewayId:            &internetGatewayId,
 	}
 
-	_, err := client.CreateRoute(ctx, input)
+	_, err := client.DeleteRoute(ctx, input)
 
 	if err != nil {
 		panic(err)
 	}
-
 }
 
 func NewEC2Client(ctx context.Context) *ec2.Client {
