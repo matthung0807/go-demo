@@ -16,6 +16,7 @@ import (
 // @host localhost:8080
 func main() {
 	http.HandleFunc("/hello", HelloHandler)
+	http.HandleFunc("/employee", CreateEmployeeHandler)
 	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
 	http.ListenAndServe(":8080", nil)
@@ -30,4 +31,14 @@ func HelloHandler(rw http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 	content := fmt.Sprintf("hello, %s", name)
 	fmt.Fprint(rw, content)
+}
+
+// @Summary Create a new employee
+// @Description Create a new employee
+// @Tags employee
+// @Produce json
+// @param request body view.CreateEmployeeRequest true "create params"
+// @Success 200 {object} view.CreateEmployeeResponse
+// @Router /employee [post]
+func CreateEmployeeHandler(rw http.ResponseWriter, r *http.Request) {
 }

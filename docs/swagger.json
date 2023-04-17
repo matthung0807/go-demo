@@ -11,6 +11,37 @@
     },
     "host": "localhost:8080",
     "paths": {
+        "/employee": {
+            "post": {
+                "description": "Create a new employee",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "employee"
+                ],
+                "summary": "Create a new employee",
+                "parameters": [
+                    {
+                        "description": "create params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/view.CreateEmployeeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/view.CreateEmployeeResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/hello": {
             "get": {
                 "produces": [
@@ -34,6 +65,38 @@
                             "type": "string"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "view.CreateEmployeeRequest": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "title": {
+                    "description": "Employee title:\n* engineer - developer, programer.\n* manager - product manger, project manager, supervisor.",
+                    "type": "string",
+                    "enum": [
+                        "engineer",
+                        "manager"
+                    ]
+                }
+            }
+        },
+        "view.CreateEmployeeResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
                 }
             }
         }

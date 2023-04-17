@@ -1,3 +1,27 @@
+definitions:
+  view.CreateEmployeeRequest:
+    properties:
+      age:
+        type: integer
+      name:
+        type: string
+      title:
+        description: |-
+          Employee title:
+          * engineer - developer, programer.
+          * manager - product manger, project manager, supervisor.
+        enum:
+        - engineer
+        - manager
+        type: string
+    type: object
+  view.CreateEmployeeResponse:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -7,6 +31,26 @@ info:
   title: Swagger Demo
   version: "1.0"
 paths:
+  /employee:
+    post:
+      description: Create a new employee
+      parameters:
+      - description: create params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/view.CreateEmployeeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/view.CreateEmployeeResponse'
+      summary: Create a new employee
+      tags:
+      - employee
   /hello:
     get:
       parameters:
