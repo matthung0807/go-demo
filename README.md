@@ -1,2 +1,2 @@
 # go-demo
-[Golang 使用swaggo產生REST API文件](https://matthung0807.blogspot.com/2022/01/go-swaggo-generate-rest-api-docs.html)
+[Golang Swagger enums標記](https://matthung0807.blogspot.com/2023/04/go-swagger-enums-tag.html)
