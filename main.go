@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	compute "google.golang.org/api/compute/v1"
 )
@@ -14,18 +13,24 @@ func main() {
 		panic(err)
 	}
 
-	networksService := compute.NewNetworksService(service)
+	globalAddressesService := compute.NewGlobalAddressesService(service)
 
-	projectId := "project-id-1"
-	vpcName := "demo-vpc-002"
-	call := networksService.Get(projectId, vpcName)
+	projectId := "allen-test-312507"
+	address := &compute.Address{
+		Name:         "demo-vpc-002-private-service-allocated-ip-range-002",
+		IpVersion:    "IPV4",
+		Region:       "GLOBAL",
+		Network:      "projects/allen-test-312507/global/networks/demo-vpc-002",
+		Address:      "10.0.0.0",
+		PrefixLength: int64(24),
+		AddressType:  "INTERNAL",
+		Purpose:      "VPC_PEERING",
+	}
+	call := globalAddressesService.Insert(projectId, address)
 
-	network, err := call.Do()
+	_, err = call.Do()
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(network.Name)             // demo-vpc-002
-	fmt.Println(len(network.Subnetworks)) // 37
-	fmt.Println(network.Subnetworks[0])   // https://www.googleapis.com/compute/v1/projects/project-id-1/regions/europe-west9/subnetworks/demo-vpc-002
 }
