@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	compute "google.golang.org/api/compute/v1"
 )
@@ -13,23 +12,27 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	instancesService := compute.NewInstancesService(service)
 
-	projectId := "project-id-1"
-	zone := "asia-east1-b"
-	instanceName := "demo-instance"
-	call := instancesService.Get(projectId, zone, instanceName)
+	networksService := compute.NewNetworksService(service)
 
-	instance, err := call.Do()
+	projectId := "allen-test-312507"
+	vpcName := "demo-vpc-002"
+	network := &compute.Network{
+		AutoCreateSubnetworks: true,
+		Mtu:                   int64(1460),
+		Name:                  vpcName,
+	}
+	call := networksService.Insert(projectId, network)
+
+	op, err := call.Do()
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(instance.Id)                    // 6192712587621936341
-	fmt.Println(instance.Name)                  // demo-instance
-	fmt.Println(instance.MachineType)           // https://www.googleapis.com/compute/beta/projects/project-id-1/zones/asia-east1-b/machineTypes/e2-micro
-	fmt.Println(instance.Disks[0].DiskSizeGb)   // 20
-	fmt.Println(instance.Disks[0].DeviceName)   // demo-instance
-	fmt.Println(instance.Disks[0].Architecture) // X86_64
-	fmt.Println(instance.Disks[0].Boot)         // true
+	_, err = service.GlobalOperations.
+		Wait(projectId, op.Name).
+		Do()
+	if err != nil {
+		panic(err)
+	}
 }
