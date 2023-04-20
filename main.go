@@ -15,7 +15,7 @@ func main() {
 
 	networksService := compute.NewNetworksService(service)
 
-	projectId := "allen-test-312507"
+	projectId := "project-id-1"
 	vpcName := "demo-vpc-002"
 	network := &compute.Network{
 		AutoCreateSubnetworks: true,
