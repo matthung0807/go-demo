@@ -17,11 +17,11 @@ func main() {
 
 	projectId := "allen-test-312507"
 	address := &compute.Address{
-		Name:         "demo-vpc-002-private-service-allocated-ip-range-002",
+		Name:         "demo-vpc-002-private-service-allocated-ip-range-003",
 		IpVersion:    "IPV4",
 		Region:       "GLOBAL",
 		Network:      "projects/allen-test-312507/global/networks/demo-vpc-002",
-		Address:      "10.0.0.0",
+		Address:      "10.0.0.0", // omit this field to automatic allocate range
 		PrefixLength: int64(24),
 		AddressType:  "INTERNAL",
 		Purpose:      "VPC_PEERING",
