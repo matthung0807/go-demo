@@ -3,31 +3,28 @@ package main
 import (
 	"context"
 
-	compute "google.golang.org/api/compute/v1"
+	"google.golang.org/api/servicenetworking/v1"
 )
 
 func main() {
 	ctx := context.Background()
-	service, err := compute.NewService(ctx)
+	service, err := servicenetworking.NewService(ctx)
 	if err != nil {
 		panic(err)
 	}
 
-	globalAddressesService := compute.NewGlobalAddressesService(service)
+	serviceConnectionService := servicenetworking.NewServicesConnectionsService(service)
 
-	projectId := "allen-test-312507"
-	address := &compute.Address{
-		Name:         "demo-vpc-002-private-service-allocated-ip-range-003",
-		IpVersion:    "IPV4",
-		Region:       "GLOBAL",
-		Network:      "projects/allen-test-312507/global/networks/demo-vpc-002",
-		Address:      "10.0.0.0", // omit this field to automatic allocate range
-		PrefixLength: int64(24),
-		AddressType:  "INTERNAL",
-		Purpose:      "VPC_PEERING",
+	parent := "services/servicenetworking.googleapis.com"                      // For Google services that support this functionality, this value is `services/servicenetworking.googleapis.com`.
+	vpcNetworkSelfLink := "projects/project-id-1/global/networks/demo-vpc-002" // vpc's selflink
+	reservedPeeringRangeName := "demo-vpc-002-allocated-range-001"             // allocated IP range name
+
+	connection := &servicenetworking.Connection{
+		Network:               vpcNetworkSelfLink,
+		ReservedPeeringRanges: []string{reservedPeeringRangeName},
 	}
-	call := globalAddressesService.Insert(projectId, address)
 
+	call := serviceConnectionService.Create(parent, connection)
 	_, err = call.Do()
 	if err != nil {
 		panic(err)
