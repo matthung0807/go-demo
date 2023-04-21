@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	compute "google.golang.org/api/compute/v1"
 )
@@ -15,22 +17,21 @@ func main() {
 
 	globalAddressesService := compute.NewGlobalAddressesService(service)
 
-	projectId := "allen-test-312507"
-	address := &compute.Address{
-		Name:         "demo-vpc-002-private-service-allocated-ip-range-003",
-		IpVersion:    "IPV4",
-		Region:       "GLOBAL",
-		Network:      "projects/allen-test-312507/global/networks/demo-vpc-002",
-		Address:      "10.0.0.0", // omit this field to automatic allocate range
-		PrefixLength: int64(24),
-		AddressType:  "INTERNAL",
-		Purpose:      "VPC_PEERING",
-	}
-	call := globalAddressesService.Insert(projectId, address)
+	projectId := "project-id-1"
+	call := globalAddressesService.List(projectId)
 
-	_, err = call.Do()
+	addressList, err := call.Do()
 	if err != nil {
 		panic(err)
+	}
+
+	vpcSelfLink := "projects/proejct-id-1/global/networks/demo-vpc-002"
+	for _, item := range addressList.Items {
+		if strings.Contains(item.Network, vpcSelfLink) {
+			fmt.Println(item.Network)
+			fmt.Println(item.Name)
+			fmt.Printf("%s/%d\n", item.Address, item.PrefixLength)
+		}
 	}
 
 }
