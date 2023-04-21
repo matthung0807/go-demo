@@ -15,12 +15,12 @@ func main() {
 
 	globalAddressesService := compute.NewGlobalAddressesService(service)
 
-	projectId := "allen-test-312507"
+	projectId := "project-id-1"
 	address := &compute.Address{
 		Name:         "demo-vpc-002-private-service-allocated-ip-range-003",
 		IpVersion:    "IPV4",
 		Region:       "GLOBAL",
-		Network:      "projects/allen-test-312507/global/networks/demo-vpc-002",
+		Network:      "projects/project-id-1/global/networks/demo-vpc-002",
 		Address:      "10.0.0.0", // omit this field to automatic allocate range
 		PrefixLength: int64(24),
 		AddressType:  "INTERNAL",
