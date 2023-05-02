@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 func main() {
@@ -14,12 +15,19 @@ func main() {
 
 	client := NewS3Client(ctx)
 
-	bucket := "s3-demo-bucket-202112151320"
-	output := GetListObjectsOutput(ctx, client, bucket)
-
-	for _, object := range output.Contents {
-		fmt.Printf("key=%s\n", aws.ToString(object.Key))
+	bucket := "aws-s3-bucket-202305021730" // bucket name
+	output, err := client.CreateBucket(ctx, &s3.CreateBucketInput{
+		Bucket: aws.String(bucket),
+		CreateBucketConfiguration: &types.CreateBucketConfiguration{
+			LocationConstraint: types.BucketLocationConstraintApNortheast1, // same as client config's region
+		},
+	})
+	if err != nil {
+		panic(err)
 	}
+
+	fmt.Println(*output.Location) // http://aws-s3-bucket-202305021730.s3.amazonaws.com/
+
 }
 
 func NewS3Client(ctx context.Context) *s3.Client {
@@ -31,18 +39,4 @@ func NewS3Client(ctx context.Context) *s3.Client {
 		panic(err)
 	}
 	return s3.NewFromConfig(cfg) // Create an Amazon S3 service client
-}
-
-func GetListObjectsOutput(
-	ctx context.Context,
-	client *s3.Client,
-	bucket string) *s3.ListObjectsV2Output {
-
-	output, err := client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{
-		Bucket: aws.String(bucket),
-	})
-	if err != nil {
-		panic(err)
-	}
-	return output
 }
