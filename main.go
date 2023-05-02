@@ -2,12 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 func main() {
@@ -15,19 +12,30 @@ func main() {
 
 	client := NewS3Client(ctx)
 
+	policy := `{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DenyAllGetObject",
+            "Effect": "Deny",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::aws-s3-bucket-202305021730/*"
+        }
+    ]
+}
+`
 	bucket := "aws-s3-bucket-202305021730" // bucket name
-	output, err := client.CreateBucket(ctx, &s3.CreateBucketInput{
-		Bucket: aws.String(bucket),
-		CreateBucketConfiguration: &types.CreateBucketConfiguration{
-			LocationConstraint: types.BucketLocationConstraintApNortheast1, // same as client config's region
-		},
-	})
+	input := &s3.PutBucketPolicyInput{
+		Bucket: &bucket,
+		Policy: &policy,
+	}
+	_, err := client.PutBucketPolicy(ctx, input)
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println(*output.Location) // http://aws-s3-bucket-202305021730.s3.amazonaws.com/
-
 }
 
 func NewS3Client(ctx context.Context) *s3.Client {
