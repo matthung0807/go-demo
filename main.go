@@ -4,33 +4,42 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/aws/aws-sdk-go-v2/service/s3control"
+	"github.com/aws/aws-sdk-go-v2/service/s3control/types"
 )
 
 func main() {
 	ctx := context.TODO()
 
-	client := NewS3Client(ctx)
+	client := NewS3ControlClient(ctx)
 
+	accountId := "423456789012"
 	bucket := "aws-s3-bucket-202305021730" // bucket name
-	output, err := client.CreateBucket(ctx, &s3.CreateBucketInput{
-		Bucket: aws.String(bucket),
-		CreateBucketConfiguration: &types.CreateBucketConfiguration{
-			LocationConstraint: types.BucketLocationConstraintApNortheast1, // same as client config's region
+	apName := "ap-1"                       // access point name
+
+	input := &s3control.CreateAccessPointInput{
+		AccountId: &accountId,
+		Bucket:    &bucket,
+		Name:      &apName,
+		PublicAccessBlockConfiguration: &types.PublicAccessBlockConfiguration{
+			BlockPublicAcls:       false,
+			BlockPublicPolicy:     false,
+			IgnorePublicAcls:      false,
+			RestrictPublicBuckets: false,
 		},
-	})
+	}
+	output, err := client.CreateAccessPoint(ctx, input)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(*output.Location) // http://aws-s3-bucket-202305021730.s3.amazonaws.com/
+	fmt.Println(*output.AccessPointArn) // arn:aws:s3:ap-northeast-1:423456789012:accesspoint/ap-1
+	fmt.Println(*output.Alias)          // ap-1-fpebhno1smg31ehcy4heps8dkz664apn1a-s3alias
 
 }
 
-func NewS3Client(ctx context.Context) *s3.Client {
+func NewS3ControlClient(ctx context.Context) *s3control.Client {
 	cfg, err := config.LoadDefaultConfig(
 		ctx,
 		config.WithRegion("ap-northeast-1"),
@@ -38,5 +47,5 @@ func NewS3Client(ctx context.Context) *s3.Client {
 	if err != nil {
 		panic(err)
 	}
-	return s3.NewFromConfig(cfg) // Create an Amazon S3 service client
+	return s3control.NewFromConfig(cfg) // Create an Amazon S3 Control client
 }
