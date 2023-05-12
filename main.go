@@ -12,29 +12,15 @@ func main() {
 
 	client := NewS3ControlClient(ctx)
 
-	accountId := "478900741429"
+	accountId := "423456789012"
 	apName := "ap-1" // access point name
 
-	policy := `{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AllowAllGetObject",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:ap-northeast-1:478900741429:accesspoint/ap-1/object/*"
-        }
-    ]
-}`
-
-	input := &s3control.PutAccessPointPolicyInput{
+	input := &s3control.DeleteAccessPointPolicyInput{
 		AccountId: &accountId,
 		Name:      &apName,
-		Policy:    &policy,
 	}
 
-	_, err := client.PutAccessPointPolicy(ctx, input)
+	_, err := client.DeleteAccessPointPolicy(ctx, input)
 	if err != nil {
 		panic(err)
 	}
