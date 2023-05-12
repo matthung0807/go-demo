@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3control"
@@ -13,24 +12,32 @@ func main() {
 
 	client := NewS3ControlClient(ctx)
 
-	accountId := "423456789012"
+	accountId := "478900741429"
 	apName := "ap-1" // access point name
 
-	input := &s3control.GetAccessPointInput{
+	policy := `{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowAllGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:ap-northeast-1:478900741429:accesspoint/ap-1/object/*"
+        }
+    ]
+}`
+
+	input := &s3control.PutAccessPointPolicyInput{
 		AccountId: &accountId,
 		Name:      &apName,
+		Policy:    &policy,
 	}
 
-	output, err := client.GetAccessPoint(ctx, input)
+	_, err := client.PutAccessPointPolicy(ctx, input)
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println(*output.AccessPointArn)    // arn:aws:s3:ap-northeast-1:423456789012:accesspoint/ap-1
-	fmt.Println(*output.Alias)             // ap-1-fpebhno1smg31ehcy4heps8dkz664apn1a-s3alias
-	fmt.Println(*output.BucketAccountId)   // 423456789012
-	fmt.Println(*&output.NetworkOrigin)    // Internet
-	fmt.Println(*&output.VpcConfiguration) // nil
 
 }
 
