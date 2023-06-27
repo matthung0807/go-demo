@@ -14,7 +14,7 @@ func main() {
 		panic(err)
 	}
 
-	projectId := "allen-test-312507"
+	projectId := "project-id-1"
 	project, err := crmService.Projects.Get(projectId).Do()
 	if err != nil {
 		panic(err)
