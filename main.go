@@ -5,27 +5,31 @@ import (
 	"fmt"
 	"strings"
 
+	"google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/serviceusage/v1"
 )
 
 func main() {
-
 	ctx := context.Background()
-	serviceusageService, err := serviceusage.NewService(ctx)
+	crmService, err := cloudresourcemanager.NewService(ctx)
 	if err != nil {
 		panic(err)
 	}
 
 	projectId := "project-id-1"
-	name := fmt.Sprintf("projects/%s/services/serviceusage.googleapis.com", projectId)
-	resp, err := serviceusageService.Services.Get(name).Do()
+	project, err := crmService.Projects.Get(projectId).Do()
 	if err != nil {
 		panic(err)
 	}
-	parent := resp.Parent
 
+	serviceusageService, err := serviceusage.NewService(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	parent := fmt.Sprintf("projects/%d", project.ProjectNumber)
+	prefix := fmt.Sprintf("%s/services/", parent)
 	serviceNames := make([]string, 0)
-
 	pageToken := ""
 	for {
 		resp, err := serviceusageService.Services.List(parent).
@@ -39,7 +43,6 @@ func main() {
 
 		for _, s := range resp.Services {
 			if strings.HasSuffix(s.Name, ".googleapis.com") {
-				prefix := fmt.Sprintf("%s/services/", parent)
 				serviceNames = append(serviceNames, strings.TrimPrefix(s.Name, prefix))
 			}
 		}
