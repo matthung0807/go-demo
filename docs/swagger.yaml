@@ -1,12 +1,44 @@
+definitions:
+  main.HelloRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
 host: localhost:8080
 info:
   contact: {}
   description: Swagger API.
   title: Gin Swagger Demo
-  version: "1.0"
+  version: "1.1"
 paths:
   /demo/v1/hello:
     get:
+      parameters:
+      - default: Bearer
+        description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Hello request
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.HelloRequest'
+      - description: Age
+        in: query
+        name: age
+        type: string
       responses:
         "200":
           description: OK

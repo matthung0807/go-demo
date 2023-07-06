@@ -9,7 +9,7 @@ import (
 )
 
 // @title Gin Swagger Demo
-// @version 1.0
+// @version 1.1
 // @description Swagger API.
 // @host localhost:8080
 func main() {
@@ -28,8 +28,17 @@ func main() {
 
 // @Success 200 {string} string
 // @Router /demo/v1/hello [get]
+// @Param Authorization header string true "JWT token" default(Bearer)
+// @Param id path string true "ID"
+// @Param payload body HelloRequest true "Hello request"
+// @Param age query string false "Age"
 func hello(c *gin.Context) {
 	c.JSON(200, "Hello - v1")
+}
+
+type HelloRequest struct {
+	Name  string `json:"name" binding:"required"`
+	Email string `json:"email"`
 }
 
 // @Success 200 {string} string

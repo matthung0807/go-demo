@@ -4,12 +4,44 @@
         "description": "Swagger API.",
         "title": "Gin Swagger Demo",
         "contact": {},
-        "version": "1.0"
+        "version": "1.1"
     },
     "host": "localhost:8080",
     "paths": {
         "/demo/v1/hello": {
             "get": {
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Hello request",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.HelloRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Age",
+                        "name": "age",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -29,6 +61,22 @@
                             "type": "string"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "main.HelloRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         }
