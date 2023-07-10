@@ -1,0 +1,39 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Swagger API.",
+        "title": "Demo",
+        "contact": {
+            "name": "matthung0807",
+            "email": "matthung0807blog@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "paths": {
+        "/order": {
+            "post": {
+                "tags": [
+                    "Order"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "uuid",
+                        "name": "X-Correlation-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "203": {
+                        "description": "Non-Authoritative Information",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

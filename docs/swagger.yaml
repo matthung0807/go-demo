@@ -1,0 +1,25 @@
+host: localhost:8080
+info:
+  contact:
+    email: matthung0807blog@gmail.com
+    name: matthung0807
+  description: Swagger API.
+  title: Demo
+  version: "1.0"
+paths:
+  /order:
+    post:
+      parameters:
+      - description: uuid
+        in: header
+        name: X-Correlation-Id
+        required: true
+        type: string
+      responses:
+        "203":
+          description: Non-Authoritative Information
+          schema:
+            type: string
+      tags:
+      - Order
+swagger: "2.0"
