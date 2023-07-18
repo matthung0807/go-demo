@@ -39,8 +39,8 @@ func NewSagaState(events Events, callbacks fsm.Callbacks) SagaState {
 	}
 }
 
-func (s *SagaState) UpdateState(ctx context.Context, topic model.Topic) {
-	s.fsm.Event(ctx, string(topic))
+func (s *SagaState) UpdateState(ctx context.Context, topic string) {
+	s.fsm.Event(ctx, topic)
 }
 
 func (s *SagaState) GetCurrentState() State {

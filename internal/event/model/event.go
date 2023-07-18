@@ -5,7 +5,3 @@ type Event interface {
 }
 
 type Topic string
-
-const (
-	SKIP_TOPIC = "skip_topic"
-)

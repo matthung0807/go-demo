@@ -41,19 +41,19 @@ func (uc *CreateUseCase) Exec(ctx context.Context) error {
 	var err error
 	createOrderSaga := sagaorder.NewCreateOrderSaga(corId)
 	createOrderSaga.AddStep(
-		saga.Action(func() (model.Topic, error) {
+		saga.Action(func() (string, error) {
 			err = uc.orderService.Create(ctx, domain.Order{})
-			return model.CREATE_ORDER_TOPIC, err
+			return string(model.CREATE_ORDER_TOPIC), err
 		}),
 		saga.Skip,
 	).AddStep(
-		saga.Action(func() (model.Topic, error) {
+		saga.Action(func() (string, error) {
 			_, err = uc.inventoryService.Update(ctx, domain.Inventory{})
-			return model.UPDATE_INVENTORY_TOPIC, err
+			return string(model.UPDATE_INVENTORY_TOPIC), err
 		}),
-		saga.Compen(func() (model.Topic, error) {
+		saga.Compen(func() (string, error) {
 			err = uc.orderService.Delete(ctx, order.Id)
-			return model.DELETE_ORDER_TOPIC, err
+			return string(model.DELETE_ORDER_TOPIC), err
 		}),
 	)
 

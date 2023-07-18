@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 
-	"abc.com/demo/internal/event/model"
 	"github.com/looplab/fsm"
 )
 
@@ -23,10 +22,10 @@ func NewSaga(id, name string, events Events, callbacks fsm.Callbacks) *Saga {
 	}
 }
 
-type Action func() (model.Topic, error)
-type Compen func() (model.Topic, error)
+type Action func() (string, error)
+type Compen func() (string, error)
 
-var Skip = func() (model.Topic, error) { return model.SKIP_TOPIC, nil }
+var Skip = func() (string, error) { return "skip_topic", nil }
 
 type Step struct {
 	action Action
