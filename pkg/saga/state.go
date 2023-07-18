@@ -3,7 +3,6 @@ package saga
 import (
 	"context"
 
-	"abc.com/demo/internal/event/model"
 	"github.com/looplab/fsm"
 	"github.com/samber/lo"
 )
@@ -48,7 +47,7 @@ func (s *SagaState) GetCurrentState() State {
 }
 
 type Event struct {
-	Topic model.Topic
+	Topic string
 	Src   []State
 	Dst   State
 }

@@ -19,9 +19,9 @@ type CreateOrderSaga struct {
 
 func NewCreateOrderSaga(corId string) *CreateOrderSaga {
 	events := saga.Events{
-		{Topic: model.CREATE_ORDER_TOPIC, Src: []saga.State{saga.STARTED}, Dst: ORDER_CREATED},
-		{Topic: model.DELETE_ORDER_TOPIC, Src: []saga.State{ORDER_CREATED}, Dst: saga.CANCELED},
-		{Topic: model.UPDATE_INVENTORY_TOPIC, Src: []saga.State{ORDER_CREATED}, Dst: saga.DONE},
+		{Topic: string(model.CREATE_ORDER_TOPIC), Src: []saga.State{saga.STARTED}, Dst: ORDER_CREATED},
+		{Topic: string(model.DELETE_ORDER_TOPIC), Src: []saga.State{ORDER_CREATED}, Dst: saga.CANCELED},
+		{Topic: string(model.UPDATE_INVENTORY_TOPIC), Src: []saga.State{ORDER_CREATED}, Dst: saga.DONE},
 	}
 	callbacks := fsm.Callbacks{}
 
