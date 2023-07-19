@@ -40,11 +40,11 @@ func (s *Saga) AddStep(action Action, compen Compen) *Saga {
 
 func (s *Saga) Execute(ctx context.Context) error {
 	log.Printf("saga=[%s] start execute", s.name)
-	for _, step := range s.steps {
-		topic, err := step.action()
+	for i := 0; i < len(s.steps); i++ {
+		topic, err := s.steps[i].action()
 		if err != nil {
 			log.Printf("saga action error, err=[%s]", err)
-			return s.Compensate(ctx)
+			return s.Compensate(ctx, i)
 		}
 		s.UpdateState(ctx, topic)
 		log.Printf("saga=[%s] current state=[%s]", s.name, s.GetCurrentState())
@@ -52,9 +52,9 @@ func (s *Saga) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (s *Saga) Compensate(ctx context.Context) error {
+func (s *Saga) Compensate(ctx context.Context, n int) error {
 	log.Printf("saga=[%s] start compensate", s.name)
-	for i := len(s.steps) - 1; i >= 0; i-- {
+	for i := n; i >= 0; i-- {
 		topic, err := s.steps[i].compen()
 		if err != nil {
 			log.Printf("saga compensate error, err=[%s]", err)
