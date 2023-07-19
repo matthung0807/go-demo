@@ -30,11 +30,11 @@ func (s *OrderProxyService) Create(ctx context.Context, order domain.Order) erro
 	event := model.NewCreateOrderEvent(corId, model.CreateOrderPayload{})
 	message, err := json.Marshal(event)
 	if err != nil {
-		return nil
+		return err
 	}
 	err = s.messageService.DirectPublish(ctx, mq.DIRECT_EXCHANGE, mq.GENERAL_QUEUE, message)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	data, err := s.messageService.ConsumeOne(ctx, mq.CREATE_ORDER_SAGA_CONSUMER, mq.CREATE_ORDER_SAGA_QUEUE)
@@ -45,7 +45,7 @@ func (s *OrderProxyService) Create(ctx context.Context, order domain.Order) erro
 	var ev model.CreateOrderReplyEvent
 	err = json.Unmarshal(data, &ev)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	if ev.Payload.Result == model.FAIELD {
