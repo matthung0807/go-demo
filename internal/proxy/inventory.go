@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"log"
 
 	"abc.com/demo/internal/adapter/mq"
 	"abc.com/demo/internal/domain"
@@ -41,7 +40,7 @@ func (s *InventoryProxyService) Create(ctx context.Context, inventory domain.Inv
 	if err != nil {
 		return domain.Inventory{}, errors.New("create inventory failed")
 	}
-	log.Printf("consumed reply data=[%s]", string(data))
+	// log.Printf("consumed reply data=[%s]", string(data))
 	var ev model.CreateInventoryReplyEvent
 	err = json.Unmarshal(data, &ev)
 	if err != nil {
@@ -75,7 +74,7 @@ func (s *InventoryProxyService) Update(ctx context.Context, inventory domain.Inv
 	if err != nil {
 		return domain.Inventory{}, errors.New("update inventory failed")
 	}
-	log.Printf("consumed reply data=[%s]", string(data))
+	// log.Printf("consumed reply data=[%s]", string(data))
 	var ev model.UpdateInventoryReplyEvent
 	err = json.Unmarshal(data, &ev)
 	if err != nil {

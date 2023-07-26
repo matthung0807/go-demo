@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"abc.com/demo/internal/adapter/mq"
 	"abc.com/demo/internal/event/model"
@@ -27,7 +26,7 @@ func (r *EventRouter) Route(ctx context.Context) {
 }
 
 func (r *EventRouter) MessageHandler(data []byte) error {
-	log.Printf("consumed data=[%s]", string(data))
+	// log.Printf("consumed data=[%s]", string(data))
 	var em model.EventMessage[any]
 	err := json.Unmarshal(data, &em)
 	if err != nil {

@@ -8,31 +8,46 @@ import (
 )
 
 type Saga struct {
-	id    string
-	name  string
-	steps []Step
+	id     string
+	name   string
+	action string
+	steps  []Step
 	SagaState
 }
 
-func NewSaga(id, name string, events Events, callbacks fsm.Callbacks) *Saga {
+func NewSaga(id, name, action string, events Events, callbacks fsm.Callbacks) *Saga {
 	return &Saga{
 		id:        id,
 		name:      name,
+		action:    action,
 		SagaState: NewSagaState(events, callbacks),
 	}
 }
 
-type Action func() (string, error)
-type Compen func() (string, error)
+type Action func() error
+type Compen func() error
 
-var Skip = func() (string, error) { return "skip_topic", nil }
-
-type Step struct {
-	action Action
-	compen Compen
+var Skip = StepCompen{
+	Name:   "skip",
+	Compen: func() error { return nil },
 }
 
-func (s *Saga) AddStep(action Action, compen Compen) *Saga {
+type Step struct {
+	action StepAction
+	compen StepCompen
+}
+
+type StepAction struct {
+	Name   string
+	Action Action
+}
+
+type StepCompen struct {
+	Name   string
+	Compen Compen
+}
+
+func (s *Saga) AddStep(action StepAction, compen StepCompen) *Saga {
 	step := Step{action, compen}
 	s.steps = append(s.steps, step)
 	return s
@@ -41,12 +56,15 @@ func (s *Saga) AddStep(action Action, compen Compen) *Saga {
 func (s *Saga) Execute(ctx context.Context) error {
 	log.Printf("saga=[%s] start execute", s.name)
 	for i := 0; i < len(s.steps); i++ {
-		topic, err := s.steps[i].action()
+
+		action := s.steps[i].action
+		s.SetAction(action.Name)
+		err := action.Action()
 		if err != nil {
 			log.Printf("saga action error, err=[%s]", err)
 			return s.Compensate(ctx, i)
 		}
-		s.UpdateState(ctx, topic)
+		s.UpdateState(ctx, action.Name)
 		log.Printf("saga=[%s] current state=[%s]", s.name, s.GetCurrentState())
 	}
 	return nil
@@ -55,13 +73,15 @@ func (s *Saga) Execute(ctx context.Context) error {
 func (s *Saga) Compensate(ctx context.Context, n int) error {
 	log.Printf("saga=[%s] start compensate", s.name)
 	for i := n; i >= 0; i-- {
-		topic, err := s.steps[i].compen()
+		compen := s.steps[i].compen
+		s.SetAction(compen.Name)
+		err := compen.Compen()
 		if err != nil {
 			log.Printf("saga compensate error, err=[%s]", err)
 			return err
 		}
-		s.UpdateState(ctx, topic)
-		log.Printf("saga=[%s] current state=[%s]", s.name, s.GetCurrentState())
+		s.UpdateState(ctx, compen.Name)
+		log.Printf("saga=[%s], action=[%s], current state=[%s]", s.name, s.action, s.GetCurrentState())
 	}
 	return nil
 }
@@ -72,4 +92,12 @@ func (s *Saga) GetName() string {
 
 func (s *Saga) GetId() string {
 	return s.id
+}
+
+func (s *Saga) GetAction() string {
+	return s.action
+}
+
+func (s *Saga) SetAction(action string) {
+	s.action = action
 }

@@ -27,7 +27,7 @@ func NewSagaState(events Events, callbacks fsm.Callbacks) SagaState {
 		})
 
 		return fsm.EventDesc{
-			Name: string(e.Topic),
+			Name: e.Name,
 			Src:  fmsSrc,
 			Dst:  string(e.Dst),
 		}
@@ -46,9 +46,13 @@ func (s *SagaState) GetCurrentState() State {
 	return State(s.fsm.Current())
 }
 
+func (s *SagaState) SetState(state string) {
+	s.fsm.SetState(state)
+}
+
 type Event struct {
-	Topic string
-	Src   []State
-	Dst   State
+	Name string
+	Src  []State
+	Dst  State
 }
 type Events []Event

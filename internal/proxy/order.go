@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"log"
 
 	"abc.com/demo/internal/adapter/mq"
 	"abc.com/demo/internal/domain"
@@ -41,7 +40,7 @@ func (s *OrderProxyService) Create(ctx context.Context, order domain.Order) erro
 	if err != nil {
 		return errors.New("create order failed")
 	}
-	log.Printf("consumed reply data=[%s]", string(data))
+	// log.Printf("consumed reply data=[%s]", string(data))
 	var ev model.CreateOrderReplyEvent
 	err = json.Unmarshal(data, &ev)
 	if err != nil {
@@ -72,7 +71,7 @@ func (s *OrderProxyService) Delete(ctx context.Context, id string) error {
 	}
 
 	data, err := s.messageService.ConsumeOne(ctx, mq.CREATE_ORDER_SAGA_CONSUMER, mq.CREATE_ORDER_SAGA_QUEUE)
-	log.Printf("consumed reply data=[%s]", string(data))
+	// log.Printf("consumed reply data=[%s]", string(data))
 	var ev model.DeleteOrderReplyEvent
 	err = json.Unmarshal(data, &ev)
 	if err != nil {

@@ -6,7 +6,6 @@ import (
 
 	"abc.com/demo/internal/adapter/repo"
 	"abc.com/demo/internal/domain"
-	"abc.com/demo/internal/event/model"
 	sagaorder "abc.com/demo/internal/saga/order"
 	"abc.com/demo/internal/service"
 	"abc.com/demo/pkg/saga"
@@ -41,20 +40,29 @@ func (uc *CreateUseCase) Exec(ctx context.Context) error {
 	var err error
 	createOrderSaga := sagaorder.NewCreateOrderSaga(corId)
 	createOrderSaga.AddStep(
-		saga.Action(func() (string, error) {
-			err = uc.orderService.Create(ctx, domain.Order{})
-			return string(model.CREATE_ORDER_TOPIC), err
-		}),
+		saga.StepAction{
+			Name: sagaorder.CREATE_ORDER,
+			Action: saga.Action(func() error {
+				err = uc.orderService.Create(ctx, domain.Order{})
+				return err
+			}),
+		},
 		saga.Skip,
 	).AddStep(
-		saga.Action(func() (string, error) {
-			_, err = uc.inventoryService.Update(ctx, domain.Inventory{})
-			return string(model.UPDATE_INVENTORY_TOPIC), err
-		}),
-		saga.Compen(func() (string, error) {
-			err = uc.orderService.Delete(ctx, order.Id)
-			return string(model.DELETE_ORDER_TOPIC), err
-		}),
+		saga.StepAction{
+			Name: sagaorder.UPDATE_INVENTORY,
+			Action: saga.Action(func() error {
+				_, err = uc.inventoryService.Update(ctx, domain.Inventory{})
+				return err
+			}),
+		},
+		saga.StepCompen{
+			Name: sagaorder.CREATE_ORDER_COMPENSATE,
+			Compen: saga.Compen(func() error {
+				err = uc.orderService.Delete(ctx, order.Id)
+				return err
+			}),
+		},
 	)
 
 	err = createOrderSaga.Execute(ctx)
