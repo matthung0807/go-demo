@@ -40,7 +40,7 @@ func (uc *CreateUseCase) Exec(ctx context.Context) error {
 	var err error
 	createOrderSaga := sagaorder.NewCreateOrderSaga(corId)
 	createOrderSaga.AddStep(
-		saga.StepAction{
+		saga.ActionStep{
 			Name: sagaorder.CREATE_ORDER,
 			Action: saga.Action(func() error {
 				err = uc.orderService.Create(ctx, domain.Order{})
@@ -49,14 +49,14 @@ func (uc *CreateUseCase) Exec(ctx context.Context) error {
 		},
 		saga.Skip,
 	).AddStep(
-		saga.StepAction{
+		saga.ActionStep{
 			Name: sagaorder.UPDATE_INVENTORY,
 			Action: saga.Action(func() error {
 				_, err = uc.inventoryService.Update(ctx, domain.Inventory{})
 				return err
 			}),
 		},
-		saga.StepCompen{
+		saga.CompenStep{
 			Name: sagaorder.CREATE_ORDER_COMPENSATE,
 			Compen: saga.Compen(func() error {
 				err = uc.orderService.Delete(ctx, order.Id)

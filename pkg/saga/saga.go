@@ -27,27 +27,27 @@ func NewSaga(id, name, action string, events Events, callbacks fsm.Callbacks) *S
 type Action func() error
 type Compen func() error
 
-var Skip = StepCompen{
+var Skip = CompenStep{
 	Name:   "skip",
 	Compen: func() error { return nil },
 }
 
 type Step struct {
-	action StepAction
-	compen StepCompen
+	action ActionStep
+	compen CompenStep
 }
 
-type StepAction struct {
+type ActionStep struct {
 	Name   string
 	Action Action
 }
 
-type StepCompen struct {
+type CompenStep struct {
 	Name   string
 	Compen Compen
 }
 
-func (s *Saga) AddStep(action StepAction, compen StepCompen) *Saga {
+func (s *Saga) AddStep(action ActionStep, compen CompenStep) *Saga {
 	step := Step{action, compen}
 	s.steps = append(s.steps, step)
 	return s

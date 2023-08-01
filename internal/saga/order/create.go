@@ -39,6 +39,7 @@ func NewCreateOrderSaga(corId string) *CreateOrderSaga {
 			Dst: saga.DONE,
 		},
 	}
+
 	callbacks := fsm.Callbacks{}
 
 	return &CreateOrderSaga{
