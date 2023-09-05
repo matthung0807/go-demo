@@ -5,48 +5,30 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
+	"github.com/aws/aws-sdk-go-v2/service/pricing"
 )
 
 func main() {
 	ctx := context.TODO()
-	client := NewEC2Client(ctx)
-
-	key := "Name"
-	value := "demo-vpc-002"
-
-	cidrBlock := "10.1.0.0/24"
-	input := &ec2.CreateVpcInput{
-		CidrBlock: &cidrBlock,
-		TagSpecifications: []types.TagSpecification{
-			{
-				ResourceType: types.ResourceTypeVpc,
-				Tags: []types.Tag{
-					{
-						Key:   &key,
-						Value: &value,
-					},
-				},
-			},
-		},
-	}
-	output, err := client.CreateVpc(ctx, input)
+	client := NewPricingClient(ctx)
+	out, err := client.DescribeServices(ctx, &pricing.DescribeServicesInput{})
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(*output.Vpc.VpcId)     // vpc-019a7b633eda5caae
-	fmt.Println(*output.Vpc.CidrBlock) // 10.1.0.0/24
+
+	for _, s := range out.Services {
+		fmt.Println(*s.ServiceCode)
+	}
 }
 
-func NewEC2Client(ctx context.Context) *ec2.Client {
+func NewPricingClient(ctx context.Context) *pricing.Client {
 	cfg, err := config.LoadDefaultConfig(
 		ctx,
-		config.WithRegion("ap-northeast-1"),
+		config.WithRegion("ap-south-1"),
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	return ec2.NewFromConfig(cfg) // Create an Amazon EC2 service client
+	return pricing.NewFromConfig(cfg) // Create an Pricing service client
 }
