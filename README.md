@@ -1,2 +1,2 @@
 # go-demo
-[Golang 建立AWS VPC](https://matthung0807.blogspot.com/2023/03/go-create-aws-vpc.html)
+[Golang 建立AWS Pricing API client](https://matthung0807.blogspot.com/2023/09/go-create-aws-pricing-api-client.html)
