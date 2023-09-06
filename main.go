@@ -4,20 +4,34 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/pricing"
+	"github.com/aws/aws-sdk-go-v2/service/pricing/types"
 )
 
 func main() {
 	ctx := context.TODO()
 	client := NewPricingClient(ctx)
-	out, err := client.DescribeServices(ctx, &pricing.DescribeServicesInput{})
+
+	serviceCode := "AmazonEC2"
+	out, err := client.GetProducts(ctx, &pricing.GetProductsInput{
+		ServiceCode: &serviceCode,
+		MaxResults:  aws.Int32(2),
+		Filters: []types.Filter{
+			{
+				Field: aws.String("sku"),
+				Type:  "TERM_MATCH",
+				Value: aws.String("7UV2VKCDN6WVVP54"),
+			},
+		},
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	for _, s := range out.Services {
-		fmt.Println(*s.ServiceCode)
+	for _, price := range out.PriceList {
+		fmt.Println(price)
 	}
 }
 

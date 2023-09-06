@@ -1,2 +1,2 @@
 # go-demo
-[Golang 建立AWS Pricing API client](https://matthung0807.blogspot.com/2023/09/go-create-aws-pricing-api-client.html)
+[Golang 取得AWS產品價格資訊](https://matthung0807.blogspot.com/2023/09/go-get-aws-product-price-info.html)
