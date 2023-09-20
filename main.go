@@ -19,7 +19,7 @@ func main() {
 			S3Key:    aws.String("demo-func-1.zip"),
 		},
 		FunctionName: aws.String("demo-func-1"),
-		Role:         aws.String("arn:aws:iam::478900741429:role/lambda-basic-execution-role-1"),
+		Role:         aws.String("arn:aws:iam::123456789012:role/lambda-basic-execution-role-1"),
 		Architectures: []types.Architecture{
 			types.ArchitectureX8664,
 		},
@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(*out.FunctionArn) // 200
+	fmt.Println(*out.FunctionArn) // arn:aws:lambda:ap-northeast-1:123456789012:function:demo-func-1
 }
 
 func NewLambdaClient(ctx context.Context) *lambda.Client {
