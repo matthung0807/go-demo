@@ -11,6 +11,11 @@ func main() {
 	lambda.Start(HandleRequest)
 }
 
-func HandleRequest(ctx context.Context) {
-	fmt.Println("Hello World")
+type Event struct {
+	Id string
+}
+
+func HandleRequest(ctx context.Context, event Event) (string, error) {
+	fmt.Println(event.Id)
+	return event.Id, nil
 }
