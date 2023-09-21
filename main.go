@@ -15,17 +15,14 @@ func main() {
 	client := NewLambdaClient(ctx)
 	out, err := client.CreateFunction(ctx, &lambda.CreateFunctionInput{
 		Code: &types.FunctionCode{
-			S3Bucket: aws.String("s3-demo-bucket-202309191740"),
-			S3Key:    aws.String("demo-func-1.zip"),
+			ImageUri: aws.String("123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/ecr-1:latest"),
 		},
 		FunctionName: aws.String("demo-func-1"),
 		Role:         aws.String("arn:aws:iam::123456789012:role/lambda-basic-execution-role-1"),
 		Architectures: []types.Architecture{
 			types.ArchitectureX8664,
 		},
-		Handler:     aws.String("bootstrap"),
-		Runtime:     types.RuntimeGo1x,
-		PackageType: types.PackageTypeZip,
+		PackageType: types.PackageTypeImage,
 	})
 	if err != nil {
 		panic(err)
