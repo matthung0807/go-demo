@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>發票範本</title>
+
+		<style>
+			.invoice-box {
+				max-width: 800px;
+				margin: auto;
+				padding: 30px;
+				border: 1px solid #eee;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+				font-size: 16px;
+				line-height: 24px;
+				font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+				color: #555;
+			}
+
+			.invoice-box table {
+				width: 100%;
+				line-height: inherit;
+				text-align: left;
+			}
+
+			.invoice-box table td {
+				padding: 5px;
+				vertical-align: top;
+			}
+
+			.invoice-box table tr td:nth-child(2) {
+				text-align: right;
+			}
+
+			.invoice-box table tr.top td {
+				padding: 10px 10px 40px;
+			}
+
+			.invoice-box table tr.top td.title {
+				font-size: 45px;
+				line-height: 45px;
+				color: #333;
+			}
+
+			.invoice-box table tr.information td {
+				padding: 0px 10px 40px;
+			}
+
+			.invoice-box table tr.heading td {
+				background: #eee;
+				border-bottom: 1px solid #ddd;
+				font-weight: bold;
+			}
+
+			.invoice-box table tr.details td {
+				padding-bottom: 20px;
+			}
+
+			.invoice-box table tr.item td {
+				border-bottom: 1px solid #eee;
+			}
+
+			.invoice-box table tr.item.last td {
+				border-bottom: none;
+			}
+
+			.invoice-box table tr.total td:nth-child(2) {
+				border-top: 2px solid #eee;
+				font-weight: bold;
+			}
+
+			/** RTL **/
+			.invoice-box.rtl {
+				direction: rtl;
+				font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+			}
+
+			.invoice-box.rtl table {
+				text-align: right;
+			}
+
+			.invoice-box.rtl table tr td:nth-child(2) {
+				text-align: left;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="invoice-box">
+			<table cellpadding="0" cellspacing="0">
+				<tr class="top">
+					<td class="title">
+                        <img
+                            src="https://sparksuite.github.io/simple-html-invoice-template/images/logo.png"
+                            style="width: 100%; max-width: 300px"
+                        />
+                    </td>
+
+                    <td>
+                        發票 #: 123<br />
+                        建立日期: 2023年1月1日<br />
+                        到期日: 2023年2月1日
+                    </td>
+				</tr>
+
+				<tr class="information">
+					<td>
+                        閃光軟體股份有限公司.<br />
+                        12345 太陽路<br />
+                        太陽村, 加利福尼亞 12345
+                    </td>
+
+                    <td>
+                        艾克梅有限公司<br />
+                        約翰道爾<br />
+                        john@example.com
+                    </td>
+				</tr>
+
+				<tr class="heading">
+					<td>支付方式</td>
+
+					<td>支票 #</td>
+				</tr>
+
+				<tr class="details">
+					<td>支票</td>
+
+					<td>1000</td>
+				</tr>
+
+				<tr class="heading">
+					<td>項目</td>
+
+					<td>價格</td>
+				</tr>
+
+				<tr class="item">
+					<td>網站設計</td>
+
+					<td>$300.00</td>
+				</tr>
+
+				<tr class="item">
+					<td>托管日期(3個月)</td>
+
+					<td>$75.00</td>
+				</tr>
+
+				<tr class="item last">
+					<td>網域名稱(1年)</td>
+
+					<td>$10.00</td>
+				</tr>
+
+				<tr class="total">
+					<td></td>
+
+					<td>總額: $385.00</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>
