@@ -1,2 +1,2 @@
 # go-demo
-[Golang template 模板簡單範例](https://matthung0807.blogspot.com/2023/10/go-template-example.html)
+[Golang template range用法](https://matthung0807.blogspot.com/2023/10/blog-post_11.html)
