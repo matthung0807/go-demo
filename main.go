@@ -36,7 +36,6 @@ func AnnotateAsHandler(f any) any {
 		fx.As(new(Hander)),
 		fx.ResultTags(`group:"handler"`),
 	)
-
 }
 
 type Router struct {

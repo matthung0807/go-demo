@@ -1,4 +1,4 @@
 # go-demo
 Go Demo
 
-[Golang Gin Web Framework hello world範例](https://matthung0807.blogspot.com/2021/07/go-gin-hello-world-example.html)
+[Golang uber Fx + Gin](https://matthung0807.blogspot.com/2023/10/go-uber-go-fx-with-gin.html)
