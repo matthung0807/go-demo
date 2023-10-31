@@ -1,9 +1,7 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"net"
 	"net/http"
 
 	"go.uber.org/fx"
@@ -12,82 +10,163 @@ import (
 func main() {
 	fx.New(
 		fx.Provide(
-			NewHTTPServer,
 			fx.Annotate(
-				NewServeMux,
-				fx.ParamTags(`group:"routes"`),
+				NewCartServiceImpl,
+				fx.As(new(CartService)),
 			),
-			AsRoute(NewEchoHandler),
-			AsRoute(NewHelloHandler),
+			fx.Annotate(
+				NewPaymentServiceImpl,
+				fx.As(new(PaymentService)),
+			),
+			fx.Annotate(
+				NewShippingServiceImpl,
+				fx.As(new(ShippingService)),
+			),
+			fx.Annotate(
+				NewOrderRepoImpl,
+				fx.As(new(OrderRepo)),
+			),
+			fx.Annotate(
+				NewProductRepoImpl,
+				fx.As(new(ProductRepo)),
+			),
+			fx.Annotate(
+				NewMemberRepoImpl,
+				fx.As(new(MemberRepo)),
+			),
+			NewHttpClient,
 		),
-		fx.Invoke(func(*http.Server) {}),
+		fx.Invoke(func(cartService CartService) {
+			cartService.Checkout()
+		}),
 	).Run()
 }
 
-func AsRoute(f any) any {
-	return fx.Annotate(
-		f,
-		fx.As(new(Route)),
-		fx.ResultTags(`group:"routes"`),
-	)
+// shopping cart
+type CartService interface {
+	Checkout()
 }
 
-func NewHTTPServer(lc fx.Lifecycle, mux *http.ServeMux) *http.Server {
-	srv := &http.Server{Addr: ":8080", Handler: mux}
-	lc.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
-			ln, err := net.Listen("tcp", srv.Addr)
-			if err != nil {
-				return err
-			}
-			fmt.Println("Starting HTTP server at", srv.Addr)
-			go srv.Serve(ln)
-			return nil
-		},
-		OnStop: func(ctx context.Context) error {
-			return srv.Shutdown(ctx)
-		},
-	})
-	return srv
+type CartServiceImpl struct {
+	orderRepo       OrderRepo
+	paymentService  PaymentService
+	shippingService ShippingService
 }
 
-type Route interface {
-	http.Handler
-	Pattern() string
-}
-
-type EchoHandler struct{}
-
-func NewEchoHandler() *EchoHandler {
-	return &EchoHandler{}
-}
-
-func (h *EchoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("echo"))
-}
-
-func (h *EchoHandler) Pattern() string {
-	return "/echo"
-}
-
-type HelloHandler struct{}
-
-func NewHelloHandler() *HelloHandler {
-	return &HelloHandler{}
-}
-func (h *HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("hello"))
-}
-
-func (h *HelloHandler) Pattern() string {
-	return "/hello"
-}
-
-func NewServeMux(routes []Route) *http.ServeMux {
-	mux := http.NewServeMux()
-	for _, route := range routes {
-		mux.Handle(route.Pattern(), route)
+func NewCartServiceImpl(
+	orderRepo OrderRepo,
+	paymentService PaymentService,
+	shippingService ShippingService,
+) *CartServiceImpl {
+	return &CartServiceImpl{
+		orderRepo:       orderRepo,
+		paymentService:  paymentService,
+		shippingService: shippingService,
 	}
+}
 
-	return mux
+func (svc CartServiceImpl) Checkout() {
+	fmt.Println("checkout - start")
+	svc.orderRepo.GetOrder()
+	svc.paymentService.Pay()
+	svc.shippingService.Ship()
+	fmt.Println("checkout - end")
+}
+
+// payment
+type PaymentService interface {
+	Pay()
+}
+
+type PaymentServiceImpl struct {
+	httpClient *http.Client
+}
+
+func NewPaymentServiceImpl(httpClient *http.Client) *PaymentServiceImpl {
+	return &PaymentServiceImpl{
+		httpClient: httpClient,
+	}
+}
+
+func (svc PaymentServiceImpl) Pay() {
+	fmt.Println("make payment")
+}
+
+// shipping
+type ShippingService interface {
+	Ship()
+}
+
+type ShippingServiceImpl struct {
+	productRepo ProductRepo
+	memberRepo  MemberRepo
+}
+
+func NewShippingServiceImpl(
+	productService ProductRepo,
+	memberService MemberRepo,
+) *ShippingServiceImpl {
+	return &ShippingServiceImpl{
+		productRepo: productService,
+		memberRepo:  memberService,
+	}
+}
+
+func (svc ShippingServiceImpl) Ship() {
+	fmt.Println("ship - start")
+	svc.productRepo.GetProduct()
+	svc.memberRepo.GetMember()
+	fmt.Println("ship - end")
+}
+
+// product
+type ProductRepo interface {
+	GetProduct()
+}
+
+type ProductRepoImpl struct {
+}
+
+func NewProductRepoImpl() *ProductRepoImpl {
+	return &ProductRepoImpl{}
+}
+
+func (svc ProductRepoImpl) GetProduct() {
+	fmt.Println("get product")
+}
+
+// order
+type OrderRepo interface {
+	GetOrder()
+}
+
+type OrderRepoImpl struct {
+}
+
+func NewOrderRepoImpl() *OrderRepoImpl {
+	return &OrderRepoImpl{}
+}
+
+func (svc OrderRepoImpl) GetOrder() {
+	fmt.Println("get order")
+}
+
+// member
+type MemberRepo interface {
+	GetMember()
+}
+
+type MemberRepoImpl struct {
+}
+
+func NewMemberRepoImpl() *MemberRepoImpl {
+	return &MemberRepoImpl{}
+}
+
+func (svc MemberRepoImpl) GetMember() {
+	fmt.Println("get member")
+}
+
+func NewHttpClient() *http.Client {
+	return http.DefaultClient
 }
