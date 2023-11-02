@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
@@ -37,9 +39,25 @@ type Router struct {
 
 func NewRouter(lc fx.Lifecycle, handlers []Hander) *Router {
 	router := gin.Default()
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: router,
+	}
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			go router.Run()
+			go func() {
+				if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+					log.Fatalf("listen: %s\n", err)
+				}
+			}()
+			return nil
+		},
+		OnStop: func(ctx context.Context) error {
+			if err := srv.Shutdown(ctx); err != nil {
+				log.Fatal("Server forced to shutdown: ", err)
+			}
+
+			log.Println("Server exiting")
 			return nil
 		},
 	})
