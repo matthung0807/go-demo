@@ -20,14 +20,6 @@ func main() {
 			router.Route()
 		}),
 	).Run()
-
-	router := gin.Default()
-	router.GET("/hello", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "hello world",
-		})
-	})
-
 }
 
 func AnnotateAsHandler(f any) any {
