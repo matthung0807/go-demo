@@ -27,14 +27,14 @@ func main() {
 			"message": "hello world",
 		})
 	})
-	router.Run()
+
 }
 
 func AnnotateAsHandler(f any) any {
 	return fx.Annotate(
 		f,
 		fx.As(new(Hander)),
-		fx.ResultTags(`group:"handler"`),
+		fx.ResultTags(`group:"handlers"`),
 	)
 }
 
