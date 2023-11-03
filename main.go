@@ -6,51 +6,72 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewString1() string {
-	s := string("foo")
-	return s
+type Scheduler interface {
+	Run()
 }
 
-func NewString2() string {
-	s := string("bar")
-	return s
+type CleanupScheduler struct {
+}
+
+func NewCleanupScheduler() *CleanupScheduler {
+	return &CleanupScheduler{}
+}
+
+func (sch CleanupScheduler) Run() {
+	fmt.Println("start cleanup...")
+}
+
+type SyncScheduler struct {
+}
+
+func NewSyncScheduler() *SyncScheduler {
+	return &SyncScheduler{}
+}
+
+func (sch SyncScheduler) Run() {
+	fmt.Println("start sync...")
 }
 
 func main() {
 	fx.New(
 		fx.Provide(
 			fx.Annotate(
-				NewString1,
-				fx.ResultTags(`name:"s1"`),
+				NewCleanupScheduler,
+				fx.As(new(Scheduler)),
+				fx.ResultTags(`group:"scheduler"`),
 			),
 		),
 		fx.Provide(
 			fx.Annotate(
-				NewString2,
-				fx.ResultTags(`name:"s2"`),
+				NewSyncScheduler,
+				fx.As(new(Scheduler)),
+				fx.ResultTags(`group:"scheduler"`),
 			),
 		),
 		fx.Provide(
 			fx.Annotate(
-				NewA,
-				fx.ParamTags(`name:"s1"`, `name:"s2"`),
+				NewSchedulerService,
+				fx.ParamTags(`group:"scheduler"`),
 			),
 		),
-		fx.Invoke(func(a *A) {
-			fmt.Println("invoke")
+		fx.Invoke(func(a *SchedulerService) {
+			a.Do()
 		}),
 	).Run()
 }
 
-type A struct {
-	S1 string
-	S2 string
+type SchedulerService struct {
+	schedulers []Scheduler
 }
 
-func NewA(s1, s2 string) *A {
-	fmt.Printf("create A with s1=[%s], s2=[%s]\n", s1, s2)
-	return &A{
-		S1: s1,
-		S2: s2,
+func NewSchedulerService(schedulers []Scheduler) *SchedulerService {
+	return &SchedulerService{
+		schedulers: schedulers,
+	}
+}
+
+func (svc SchedulerService) Do() {
+	for _, sch := range svc.schedulers {
+		go sch.Run()
 	}
 }
