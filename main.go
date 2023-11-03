@@ -9,17 +9,8 @@ import (
 )
 
 func main() {
-
 	ctx := context.TODO()
-	cfg, err := config.LoadDefaultConfig(
-		ctx,
-		config.WithRegion("ap-northeast-1"),
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	client := sqs.NewFromConfig(cfg)
+	client := NewSQSClient(ctx)
 
 	qn := "DemoQueue"
 	urlInput := &sqs.GetQueueUrlInput{
@@ -44,4 +35,16 @@ func main() {
 	}
 
 	fmt.Println(*smOutput.MessageId)
+}
+
+func NewSQSClient(ctx context.Context) *sqs.Client {
+	cfg, err := config.LoadDefaultConfig(
+		ctx,
+		config.WithRegion("ap-northeast-1"),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	return sqs.NewFromConfig(cfg) // Create an Amazon EC2 service client
 }
