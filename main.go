@@ -6,10 +6,36 @@ import (
 	"go.uber.org/fx"
 )
 
+func NewString1() string {
+	s := string("foo")
+	return s
+}
+
+func NewString2() string {
+	s := string("bar")
+	return s
+}
+
 func main() {
 	fx.New(
-		fx.Provide(NewA),
-		fx.Provide(NewB),
+		fx.Provide(
+			fx.Annotate(
+				NewString1,
+				fx.ResultTags(`name:"s1"`),
+			),
+		),
+		fx.Provide(
+			fx.Annotate(
+				NewString2,
+				fx.ResultTags(`name:"s2"`),
+			),
+		),
+		fx.Provide(
+			fx.Annotate(
+				NewA,
+				fx.ParamTags(`name:"s1"`, `name:"s2"`),
+			),
+		),
 		fx.Invoke(func(a *A) {
 			fmt.Println("invoke")
 		}),
@@ -17,20 +43,14 @@ func main() {
 }
 
 type A struct {
-	*B
+	S1 string
+	S2 string
 }
 
-func NewA(b *B) *A {
-	fmt.Println("create A")
+func NewA(s1, s2 string) *A {
+	fmt.Printf("create A with s1=[%s], s2=[%s]\n", s1, s2)
 	return &A{
-		B: b,
+		S1: s1,
+		S2: s2,
 	}
-}
-
-type B struct {
-}
-
-func NewB() *B {
-	fmt.Println("create B")
-	return &B{}
 }
