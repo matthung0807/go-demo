@@ -54,6 +54,6 @@ func main() {
 
 	// add contextual fields to global logger
 	log.Logger = log.With().Str("env", "qat").Logger()
-	log.Info().Msg("message") // {"level":"info","env":"qat","time":"2023-11-03T18:36:38+08:00","message":"info message"}
+	log.Info().Msg("message") // {"level":"info","env":"qat","time":"2023-11-03T18:36:38+08:00","message":"message"}
 
 }
