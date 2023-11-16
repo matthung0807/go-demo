@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/directconnect"
 )
@@ -12,24 +13,14 @@ func main() {
 	ctx := context.TODO()
 	client := NewDirectConnectClient(ctx)
 
-	connectionId := "dxcon-fg5kq63s"
-	params := &directconnect.DescribeConnectionsInput{
-		ConnectionId: &connectionId,
-	}
-
-	output, err := client.DescribeConnections(ctx, params)
+	output, err := client.ConfirmConnection(ctx, &directconnect.ConfirmConnectionInput{
+		ConnectionId: aws.String("dxcon-fg5kq63s"),
+	})
 	if err != nil {
 		panic(err)
 	}
 
-	connection := output.Connections[0]
-	fmt.Println(*connection.ConnectionName)     // demo-connection-001
-	fmt.Println(*connection.Bandwidth)          // 1Gbps
-	fmt.Println(connection.ConnectionState)     // down
-	fmt.Println(*connection.Location)           // CHT51
-	fmt.Println(*connection.AwsLogicalDeviceId) // CHT51-2l5nybymui838
-	fmt.Println(*connection.ProviderName)       // Chunghwa Telecom
-	fmt.Println(connection.LoaIssueTime)        // nil
+	fmt.Println(output.ConnectionState)
 }
 
 func NewDirectConnectClient(ctx context.Context) *directconnect.Client {
