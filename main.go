@@ -29,7 +29,6 @@ func main() {
 	fmt.Println(*connection.Location)           // CHT51
 	fmt.Println(*connection.AwsLogicalDeviceId) // CHT51-2l5nybymui838
 	fmt.Println(*connection.ProviderName)       // Chunghwa Telecom
-	fmt.Println(connection.LoaIssueTime)        // nil
 }
 
 func NewDirectConnectClient(ctx context.Context) *directconnect.Client {
