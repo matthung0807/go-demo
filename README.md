@@ -1,2 +1,2 @@
 # go-demo
-[Golang 建立GCP執行個體 Create GCP Compute VM instance](https://matthung0807.blogspot.com/2024/01/go-create-gcp-compute-vm-instance.html)
+[Golang 查詢GCP公用作業系統映像檔 Query public OS images](https://matthung0807.blogspot.com/2024/01/go-query-gcp-public-os-images.html)

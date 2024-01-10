@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	compute "google.golang.org/api/compute/v1"
 )
@@ -12,41 +13,21 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	projectId := "project-id-1"
-	zone := "asia-east1-b"
+	projectId := "debian-cloud"
 
-	instancesService := compute.NewInstancesService(computeService)
+	imagesService := compute.NewImagesService(computeService)
 
-	attachDisks := []*compute.AttachedDisk{
-		{
-			AutoDelete: true,
-			Boot:       true,
-			InitializeParams: &compute.AttachedDiskInitializeParams{
-				DiskName:    "instance-1-boot-disk",
-				DiskSizeGb:  20,
-				DiskType:    "projects/project-id-1/zones/asia-east1-b/diskTypes/pd-balanced",
-				SourceImage: "projects/debian-cloud/global/images/debian-11-bullseye-arm64-v20231212", // OS Image
-			},
-		},
-	}
-
-	instance := &compute.Instance{
-		Name:               "instance-1",
-		DeletionProtection: false,
-		MachineType:        "https://www.googleapis.com/compute/v1/projects/project-id-1/zones/asia-east1-b/machineTypes/e2-small",
-		NetworkInterfaces: []*compute.NetworkInterface{
-			{
-				StackType:  "IPV4_ONLY",
-				Subnetwork: "projects/project-id-1/regions/asia-east1/subnetworks/test-east1-b",
-			},
-		},
-		Disks: attachDisks,
-	}
-
-	call := instancesService.Insert(projectId, zone, instance)
-	_, err = call.Do()
+	call := imagesService.List(projectId)
+	imageList, err := call.
+		Filter("(name:debian-12-*) AND (family:debian-12)").
+		Do()
 	if err != nil {
 		panic(err)
+	}
+
+	for _, item := range imageList.Items {
+		fmt.Println(item.Name)
+		fmt.Println(item.SelfLink)
 	}
 
 }
