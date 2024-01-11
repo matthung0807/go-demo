@@ -1,2 +1,2 @@
 # go-demo
-[Golang WebSocket hello world](https://matthung0807.blogspot.com/2022/12/go-websocket-hello-world.html)
+[Golang WebSocket Ping Pong範例](https://matthung0807.blogspot.com/2024/01/go-websocket-ping-pong-example.html)
