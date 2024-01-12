@@ -67,7 +67,7 @@ func handlePong(conn *websocket.Conn) {
 func read(conn *websocket.Conn) {
 	defer func() {
 		conn.Close()
-		fmt.Println("websocket cåonnection closed")
+		fmt.Println("websocket connection closed")
 	}()
 
 	for {
