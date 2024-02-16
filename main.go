@@ -5,12 +5,28 @@ import (
 	"text/template"
 )
 
-func main() {
-	text := "hello {{.}}"                                // 模板內容。{{.}}會插入資料物件
-	t := template.Must(template.New("demo").Parse(text)) // 解析模板內容來建立名稱為'demo'的模板
+type AddValues struct {
+	X int
+	Y int
+}
 
-	data := "john"
-	err := t.Execute(os.Stdout, data) // 將資料物件套用在模板，並將結果輸出到標準輸出
+var funcMap = template.FuncMap{
+	"add": add,
+}
+
+func add(a, b int) int {
+	return a + b
+}
+
+func main() {
+	text := "{{.X}} + {{.Y}} = {{add .X .Y}}\n" // template content
+	t := template.Must(template.New("demo").Funcs(funcMap).Parse(text))
+
+	data := AddValues{
+		X: 1,
+		Y: 2,
+	}
+	err := t.Execute(os.Stdout, data)
 	if err != nil {
 		panic(err)
 	}
