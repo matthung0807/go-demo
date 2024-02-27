@@ -1,6 +1,6 @@
 module abc.com/demo
 
-go 1.19
+go 1.21
 
 require google.golang.org/api v0.109.0
 
