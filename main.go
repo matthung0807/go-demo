@@ -13,16 +13,14 @@ func main() {
 		panic(err)
 	}
 	projectId := "project-id-1"
-	zone := "asia-east2-a"
 
-	instancesService := compute.NewInstancesService(computeService)
-
-	instance := &compute.Instance{
-		Name:               "instance-1-a",
-		SourceMachineImage: "projects/project-id-1/global/machineImages/instance-1-image",
+	machineImagesService := compute.NewMachineImagesService(computeService)
+	machineImage := &compute.MachineImage{
+		Name:           "instance-1-image",
+		SourceInstance: "projects/project-id-1/zones/asia-east2-b/instances/instance-1",
 	}
+	call := machineImagesService.Insert(projectId, machineImage)
 
-	call := instancesService.Insert(projectId, zone, instance)
 	_, err = call.Do()
 	if err != nil {
 		panic(err)
