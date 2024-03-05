@@ -37,5 +37,5 @@ func NewCloudWatchClient(ctx context.Context) *cloudwatch.Client {
 		panic(err)
 	}
 
-	return cloudwatch.NewFromConfig(cfg) // Create an Amazon EC2 service client
+	return cloudwatch.NewFromConfig(cfg) // Create an Amazon CloudWatch service client
 }
