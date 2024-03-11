@@ -15,29 +15,52 @@ func main() {
 	ctx := context.TODO()
 	client := NewCloudWatchClient(ctx)
 
-	output, err := client.GetMetricStatistics(ctx, &cloudwatch.GetMetricStatisticsInput{
-		MetricName: aws.String("CPUUtilization"),
-		StartTime:  aws.Time(time.Date(2024, 3, 5, 14, 0, 0, 0, time.UTC)), // 2024-03-05T14:00:00Z
-		EndTime:    aws.Time(time.Date(2024, 3, 5, 15, 0, 0, 0, time.UTC)), // 2024-03-05T15:00:00Z
-		Period:     aws.Int32(600),
-		Namespace:  aws.String("AWS/EC2"),
-		Statistics: []types.Statistic{types.StatisticAverage},
-		Dimensions: []types.Dimension{
-			{
-				Name:  aws.String("InstanceId"),
-				Value: aws.String("i-015766eb6a31d3413"),
+	var nextToken *string
+	for {
+		output, err := client.GetMetricData(ctx, &cloudwatch.GetMetricDataInput{
+			NextToken: nextToken,
+			StartTime: aws.Time(time.Date(2024, 3, 5, 14, 0, 0, 0, time.UTC)), // 2024-03-05T14:00:00Z
+			MetricDataQueries: []types.MetricDataQuery{
+				{
+					Id:         aws.String("q1"),
+					Expression: aws.String("AVG(METRICS())"),
+					Period:     aws.Int32(600),
+				},
+				{
+					Id: aws.String("m1"),
+					MetricStat: &types.MetricStat{
+						Metric: &types.Metric{
+							Namespace:  aws.String("AWS/EC2"),
+							MetricName: aws.String("CPUUtilization"),
+							Dimensions: []types.Dimension{
+								{
+									Name:  aws.String("InstanceId"),
+									Value: aws.String("i-015766eb6a31d3413"),
+								},
+							},
+						},
+						Period: aws.Int32(600),
+						Stat:   aws.String("Average"),
+					},
+				},
 			},
-		},
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	for _, point := range output.Datapoints {
-		fmt.Println(*point.Timestamp)
-		fmt.Println(*point.Average)
-		fmt.Println(point.Unit)
-		fmt.Println("========================================")
+		})
+		if err != nil {
+			panic(err)
+		}
+		for _, r := range output.MetricDataResults {
+			if *r.Id == "q1" {
+				for _, t := range r.Timestamps {
+					fmt.Println(t)
+				}
+				for _, v := range r.Values {
+					fmt.Println(v)
+				}
+			}
+		}
+		if output.NextToken == nil {
+			break
+		}
 	}
 }
 
