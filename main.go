@@ -2,51 +2,55 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"time"
 
-	compute "google.golang.org/api/compute/v1"
+	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
+	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/api/iterator"
 )
 
 func main() {
 	ctx := context.Background()
-	computeService, err := compute.NewService(ctx)
+	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		panic(err)
 	}
+	defer c.Close()
+
 	projectId := "project-id-1"
-	zone := "asia-east1-b"
 
-	instancesService := compute.NewInstancesService(computeService)
+	now := time.Now().UTC()
+	startTime := now.Add(time.Minute * -10).Unix()
+	endTime := now.Unix()
 
-	attachDisks := []*compute.AttachedDisk{
-		{
-			AutoDelete: true,
-			Boot:       true,
-			InitializeParams: &compute.AttachedDiskInitializeParams{
-				DiskName:    "instance-1-boot-disk",
-				DiskSizeGb:  20,
-				DiskType:    "projects/project-id-1/zones/asia-east1-b/diskTypes/pd-balanced",
-				SourceImage: "projects/debian-cloud/global/images/debian-11-bullseye-arm64-v20231212", // OS Image
-			},
+	req := &monitoringpb.ListTimeSeriesRequest{
+		Name: "projects/" + projectId,
+		Filter: `
+	resource.type="gce_instance"
+	metric.type="compute.googleapis.com/instance/cpu/utilization" AND
+	metric.labels.instance_name = "instance-1"
+	`,
+		Interval: &monitoringpb.TimeInterval{
+			StartTime: &timestamp.Timestamp{Seconds: startTime},
+			EndTime:   &timestamp.Timestamp{Seconds: endTime},
 		},
 	}
+	it := c.ListTimeSeries(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			panic(err)
+		}
 
-	instance := &compute.Instance{
-		Name:               "instance-1",
-		DeletionProtection: false,
-		MachineType:        "https://www.googleapis.com/compute/v1/projects/project-id-1/zones/asia-east1-b/machineTypes/e2-small",
-		NetworkInterfaces: []*compute.NetworkInterface{
-			{
-				StackType:  "IPV4_ONLY",
-				Subnetwork: "projects/project-id-1/regions/asia-east1/subnetworks/test-east1-b",
-			},
-		},
-		Disks: attachDisks,
-	}
-
-	call := instancesService.Insert(projectId, zone, instance)
-	_, err = call.Do()
-	if err != nil {
-		panic(err)
+		for _, p := range resp.Points {
+			fmt.Println(p.GetInterval().GetEndTime().AsTime())
+			fmt.Println(p.GetValue().GetDoubleValue())
+		}
 	}
 
 }
