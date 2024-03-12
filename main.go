@@ -9,6 +9,7 @@ import (
 	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func main() {
@@ -35,6 +36,10 @@ func main() {
 		Interval: &monitoringpb.TimeInterval{
 			StartTime: &timestamp.Timestamp{Seconds: startTime},
 			EndTime:   &timestamp.Timestamp{Seconds: endTime},
+		},
+		Aggregation: &monitoringpb.Aggregation{
+			AlignmentPeriod:  durationpb.New(time.Minute * 10),
+			PerSeriesAligner: monitoringpb.Aggregation_ALIGN_SUM,
 		},
 	}
 	it := c.ListTimeSeries(ctx, req)
