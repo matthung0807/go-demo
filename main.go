@@ -29,8 +29,9 @@ func main() {
 		Name: "projects/" + projectId,
 		Filter: `
 	resource.type="gce_instance"
-	metric.type="compute.googleapis.com/instance/cpu/utilization" AND
-	metric.labels.instance_name = "instance-1"
+	metric.type="compute.googleapis.com/instance/disk/write_bytes_count" AND
+	metric.labels.instance_name = "instance-1" AND
+	metric.labels.device_name = "instance-1"
 	`,
 		Interval: &monitoringpb.TimeInterval{
 			StartTime: &timestamp.Timestamp{Seconds: startTime},
@@ -49,7 +50,7 @@ func main() {
 
 		for _, p := range resp.Points {
 			fmt.Println(p.GetInterval().GetEndTime().AsTime())
-			fmt.Println(p.GetValue().GetDoubleValue())
+			fmt.Println(p.GetValue().GetInt64Value())
 		}
 	}
 
