@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -16,16 +17,16 @@ func main() {
 	client := NewCloudWatchClient(ctx)
 
 	output, err := client.GetMetricStatistics(ctx, &cloudwatch.GetMetricStatisticsInput{
-		MetricName: aws.String("CPUUtilization"),
-		StartTime:  aws.Time(time.Date(2024, 3, 5, 14, 0, 0, 0, time.UTC)), // 2024-03-05T14:00:00Z
-		EndTime:    aws.Time(time.Date(2024, 3, 5, 15, 0, 0, 0, time.UTC)), // 2024-03-05T15:00:00Z
+		MetricName: aws.String("VolumeReadBytes"),
+		StartTime:  aws.Time(time.Now().Add(-time.Hour * 1)),
+		EndTime:    aws.Time(time.Now()),
 		Period:     aws.Int32(600),
-		Namespace:  aws.String("AWS/EC2"),
-		Statistics: []types.Statistic{types.StatisticAverage},
+		Namespace:  aws.String("AWS/EBS"),
+		Statistics: []types.Statistic{types.StatisticSum},
 		Dimensions: []types.Dimension{
 			{
-				Name:  aws.String("InstanceId"),
-				Value: aws.String("i-015766eb6a31d3413"),
+				Name:  aws.String("VolumeId"),
+				Value: aws.String("vol-02a899c6436c371a5"),
 			},
 		},
 	})
@@ -33,9 +34,14 @@ func main() {
 		panic(err)
 	}
 
+	dataPoints := output.Datapoints
+	sort.Slice(dataPoints, func(i, j int) bool {
+		return dataPoints[i].Timestamp.Before(*dataPoints[j].Timestamp)
+	})
+
 	for _, point := range output.Datapoints {
 		fmt.Println(*point.Timestamp)
-		fmt.Println(*point.Average)
+		fmt.Println(*point.Sum)
 		fmt.Println(point.Unit)
 		fmt.Println("========================================")
 	}
