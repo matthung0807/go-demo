@@ -2,19 +2,34 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/samber/lo"
 )
 
 func main() {
-	map1 := map[string]int{
-		"john": 33,
-		"mary": 28,
+	messages := genMessages()
+	messageChan := make(chan string)
+	workerNum := len(messages) / 10
+	for i := 0; i < workerNum; i++ {
+		go worker(messageChan)
 	}
-	map2 := map[string]int{
-		"mary": 18,
-		"tony": 40,
+	send(messages, messageChan)
+}
+
+func send(messages []string, messageChan chan string) {
+	for j := 0; j < len(messages); j++ {
+		messageChan <- messages[j]
 	}
-	resultMap := lo.Assign(map1, map2)
-	fmt.Println(resultMap)
+}
+
+func worker(messageChan chan string) {
+	for message := range messageChan {
+		fmt.Printf("%s\n", message)
+	}
+}
+
+func genMessages() []string {
+	messages := make([]string, 0)
+	for i := 0; i < 100; i++ {
+		messages = append(messages, fmt.Sprintf("message %d", i))
+	}
+	return messages
 }
