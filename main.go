@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -23,6 +24,7 @@ func send(msgs []string, msgChen chan string) {
 
 func worker(msgChen chan string) {
 	for msg := range msgChen { // 將訊息從channel中取出。若channel中無訊息會阻塞
+		time.Sleep(time.Second * 1) // 模擬處理每筆訊息要耗費的時間
 		fmt.Printf("%s\n", msg)
 	}
 }
