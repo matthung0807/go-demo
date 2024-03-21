@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"abc.com/demo/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,14 +16,11 @@ func main() {
 }
 
 func demoHandler(c *gin.Context) {
-
-	var m map[string]interface{}
-	err := c.Bind(&m)
+	var dep model.Department
+	err := c.Bind(&dep)
 	if err != nil {
 		return
 	}
-
-	fmt.Printf("%v\n", m)
-
+	fmt.Printf("%v\n", dep)
 	c.JSON(200, "success")
 }
