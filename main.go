@@ -14,15 +14,15 @@ func main() {
 	send(msgs, msgChen) // 將訊息發送到channel
 }
 
-func send(messages []string, messageChan chan string) {
-	for j := 0; j < len(messages); j++ {
-		messageChan <- messages[j] // 將訊息逐筆發送到channel
+func send(msgs []string, msgChen chan string) {
+	for j := 0; j < len(msgs); j++ {
+		msgChen <- msgs[j] // 將訊息逐筆發送到channel
 	}
 }
 
-func worker(messageChan chan string) {
-	for message := range messageChan { // 將訊息從channel中取出。若channel中無訊息會阻塞
-		fmt.Printf("%s\n", message)
+func worker(msgChen chan string) {
+	for msg := range msgChen { // 將訊息從channel中取出。若channel中無訊息會阻塞
+		fmt.Printf("%s\n", msg)
 	}
 }
 
