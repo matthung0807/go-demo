@@ -1,4 +1,4 @@
 # go-demo
 Go Demo
 
-[Golang Gin Web Framework hello world範例](https://matthung0807.blogspot.com/2021/07/go-gin-hello-world-example.html)
+[Golang Gin 轉Request body JSON為map](https://matthung0807.blogspot.com/2021/08/go-gin-receive-request-json-to-map.html)
