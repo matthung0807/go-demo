@@ -7,39 +7,25 @@ import (
 )
 
 func main() {
-	msgs := genMessages()
+	msgs := genMessages() // 產生多筆訊息
 
-	var wg sync.WaitGroup
-	workerNum := len(msgs) / 10
-	wg.Add(workerNum)
+	var wg sync.WaitGroup // 建立WaitGroup物件
 
-	msgChen := make(chan string)
-	for i := 0; i < workerNum; i++ {
-		go worker(&wg, msgChen)
+	// 每一筆訊息都由一個goroutine處理
+	for _, msg := range msgs {
+		wg.Add(1) // 每多一個goroutine，就在WaitGroup計數加一
+		go func(msg string) {
+			defer wg.Done()             // 當一個goroutine結束，就從WaitGroup計數扣除
+			time.Sleep(time.Second * 1) // 模擬處理每筆訊息要耗費的時間
+			fmt.Println(msg)
+		}(msg)
 	}
-
-	send(msgs, msgChen)
-	wg.Wait()
-}
-
-func send(msgs []string, msgChen chan string) {
-	for j := 0; j < len(msgs); j++ {
-		msgChen <- msgs[j]
-	}
-	close(msgChen)
-}
-
-func worker(wg *sync.WaitGroup, msgChen chan string) {
-	defer wg.Done()
-	for msg := range msgChen {
-		time.Sleep(time.Second * 1)
-		fmt.Printf("%s\n", msg)
-	}
+	wg.Wait() // 當WaitGroup的計數為0之前，會阻塞。
 }
 
 func genMessages() []string {
 	msgs := make([]string, 0)
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 10; i++ {
 		msgs = append(msgs, fmt.Sprintf("message %d", i))
 	}
 	return msgs
