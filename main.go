@@ -18,6 +18,7 @@ func send(msgs []string, msgChen chan string) {
 	for j := 0; j < len(msgs); j++ {
 		msgChen <- msgs[j] // 將訊息逐筆發送到channel
 	}
+	close(msgChen) // 訊息都送到channel後將其關閉
 }
 
 func worker(msgChen chan string) {
