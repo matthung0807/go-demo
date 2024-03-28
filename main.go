@@ -13,7 +13,6 @@ import (
 // @description Swagger API.
 // @host localhost:8080
 func main() {
-
 	router := gin.Default()
 
 	router.Group("/demo/v1").
